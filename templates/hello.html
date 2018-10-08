@@ -1,3 +1,9 @@
 <!doctype html>
-	<h1>Hello {{ user.name }}! </h1>
+<body>
+	<ul>
+		{% for name in names %}
+			<li>{{ name }}</li>
+		{% endfor %}
+	</ul>
+</body>
 </html>
