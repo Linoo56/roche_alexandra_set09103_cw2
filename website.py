@@ -1,31 +1,28 @@
-import ConfigParser
-from flask import Flask, request, render_template
+import ConfigParser, sqlite3
+from flask import Flask, request, render_template, g
 app = Flask(__name__)
+db_location = 'var/sqlite3.db'
+
+def get_db():
+	db = getattr(g,'db', None)
+	if db is None:
+		db = sqlite3.connect(db_location)
+		g.db = db
+	return db
+
+@app.teardown_appcontext
+def close_db_connection(exception):
+	db = getattr(g, 'db', None)
+	if db is not None:
+		db.close()
+
+def init_db():
+	
 
 @app.route('/')
 def root():
 	return "Hello Napier from the configuration testing app"
 
-@app.route('/config/')
-def config():
-	str=[]
-	str.append('port:'+app.config['port'])
-	str.append('url:'+app.config['url'])
-	str.append('ip_address :'+app.config['ip_address'])
-	return '\t'.join(str)
-
-def init (app):
-	config = ConfigParser.ConfigParser()
-	try:
-		config_location = "etc/defaults.cfg"
-		config.read(config_location)
-
-		app.config['DEBUG'] = config.get("config", "debug")
-		app.config['ip_address'] = config.get("config", "ip_address")
-		app.config['port'] = config.get("config", "port")
-		app.config['url'] = config.get("config", "url")
-	except :
-		print " Could not read configs from : ", config_location
 
 if __name__ == '__main__':
 	init(app)
