@@ -2,11 +2,11 @@
 <head>
 	<title>Set09103 - Japanese schools in Japan</title>
 	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}", rel= "stylesheet" />
-	<!--<style>
-		body{
-			padding-top:50px;
-		} 
-	</style>-->
+	<style>
+	  .header{padding-bottom : 15px}
+	  .panel-heading{font-weight : bold;
+			 font-size : 18px}
+	</style>
 </head>
 <body>
 <nav class="navbar navbar-default navbar-inverse">
@@ -51,12 +51,27 @@
 </nav>  
 	
 <div class="container">
-  <h1>Welcome on Japanese Language Schools directory !</h1> 
-  <ul>
-    {% for school in schools %}
-      <li>{{ school|join(' ') }}</li>
-    {% endfor %}
-  </ul>
+  <div class="header">
+    <h1>Welcome on Japanese Language Schools directory !</h1> 
+    <h2>List of all registered schools :</h2>
+  </div>
+  {% for school in schools %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        {{ school[1] }}
+      </div>
+      <div class="panel-body">
+        <dl class="dl-horizontal">
+	  <dt>Name :</dt>
+	  <dd>{{ school[1] }}</dd>
+	  <dt>City :</dt>
+	  <dd>{{ school[2] }}</dd>
+	  <dt>Price per month (€) :</dt>
+	  <dd>{% if school[11] == None %} Not calculated {% else %}{{ school[11] }} {% endif %}</dd>
+	</dl>
+      </div>	
+    </div>
+  {% endfor %}
 </div>
 
 </body>
