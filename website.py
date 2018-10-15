@@ -27,8 +27,31 @@ def init_db():
 def root():
 	db = get_db()
 	sql="SELECT * FROM mytable"
-	return render_template('hello.html', schools=db.cursor().execute(sql))
+	return render_template('boxes.html', schools=db.cursor().execute(sql))
 
+@app.route('/schools/')
+def listing_schools():
+
+@app.route('/schools/<number>')	
+def school_description():
+
+@app.route('/schools/price')
+def prices():
+
+@app.route('/schools/price/<price_range>')
+def short_prices():
+
+@app.route('/schools/city')
+def cities():
+
+@app.route('/schools/city/<city>')
+def short_cities():
+
+@app.route('/schools/accomodation')
+def accomodations():
+
+@app.route('/schools/accomodation/<type>')
+def short_accomodation():
 
 if __name__ == '__main__':
 	app.run(host="0.0.0.0", debug=True)
