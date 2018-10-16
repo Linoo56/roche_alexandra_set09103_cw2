@@ -8,6 +8,7 @@
 	  .panel-heading{font-weight : bold;
 			 font-size : 18px}
 	</style>
+	{% block style %} {% endblock %}
 </head>
 <body>
 <nav class="navbar navbar-default navbar-inverse">
@@ -20,20 +21,36 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="{{ url_for('listing_schools') }}">Schools</a>
+      <a class="navbar-brand" href="{{ url_for('root') }}">Home</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
+        <li><a href="{{ url_for('listing_schools') }}">Schools</a></li>
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">By location<span class="caret"></span></a>
+          <a href="{{ url_for('cities') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">By location<span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="#">Tokyo</a></li>
             <li><a href="#">Kyoto</a></li>
             <li><a href="#">Nagano</a></li>
             <li><a href="#">Fukuoka</a></li>
             <li><a href="#">Nagoya</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="{{ url_for('prices') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">By price<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Under 1000€/month</a></li>
+            <li><a href="#">Over 1000€/month</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="{{ url_for('durations') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">By duration<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Under 12 months</a></li>
+            <li><a href="#">12 months</a></li>
+            <li><a href="#">18 months</a></li>
           </ul>
         </li>
       </ul>

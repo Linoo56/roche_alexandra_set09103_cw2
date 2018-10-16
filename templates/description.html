@@ -1,4 +1,15 @@
 {% extends "main.html" %}
+{% block style %}
+<style>
+  dd {
+    margin-bottom: 5px;
+  }
+  tr .sub{
+    font-weight: normal;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
   {% for school in schools %}    
     <div class="container">
@@ -19,6 +30,12 @@
 		  <dt>District :</dt>
 		  <dd>{{ school[3] }}</dd>
 		{% endif %}
+		<dt>Duration :</dt>
+		<dd>{{ school[9] }} months</dd>
+		<dt>Website :</dt>
+		<dd><a href="{{ school[12] }}">{{ school[12] }}</a></dd>
+		<dt>Additional notes :</dt>
+		<dd>{% if school[13] != None %}{{ school[13] }} {% else %} {% endif %}</dd>
 	      </dl>
             </div>
             <div class="col-md-6">
@@ -26,8 +43,28 @@
   	        <div class="panel-heading"><h3>Price details</h3></div>
   	        <table class="table">
     	 	  <tr>
-		    <th>Placement fee :</th>
-		    <th>{{ school[4] }} yens</th>
+		    <th class="sub">Placement fee :</th>
+		    <th class="sub">{{ school[4] }} yens</th>
+		  </tr>
+    	 	  <tr>
+		    <th class="sub">Course fee :</th>
+		    <th class="sub">{{ school[5] }} yens</th>
+		  </tr>
+    	 	  <tr>
+		    <th class="sub">Residence fee :</th>
+		    <th class="sub">{% if school[7] != None %}{{ school[7] }} yens{% else %}No information provided{% endif %}</th>
+		  </tr>
+    	 	  <tr>
+		    <th>Total :</th>
+		    <th>{% if school[8] != None %}{{ school[8] }} yens{% else %}No information provided{% endif %}</th>
+		  </tr>
+    	 	  <tr>
+		    <th>Total per month:</th>
+		    <th>{% if school[10] != None %}{{ school[10] }} yens{% else %}No information provided{% endif %}</th>
+		  </tr>
+    	 	  <tr>
+		    <th><b>Total per month:</b></th>
+		    <th>{% if school[11] != None %}{{ school[11] }} euros{% else %}No information provided{% endif %}</th>
 		  </tr>
   	        </table>
 	      </div>

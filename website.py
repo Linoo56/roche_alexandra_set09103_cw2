@@ -23,9 +23,15 @@ def init_db():
 			db.cursor().executescript(f.read())
 		db.commit()
 
+def get_count_db(value,sql):
+	db=get_db()
+	sql=sql+"'"+value+"'"
+	return db.cursor().execute(sql)
+	
+
 @app.route('/')
 def root():
-	return ""
+	return render_template('home.html')
 
 @app.route('/schools/')
 def listing_schools():
@@ -41,26 +47,33 @@ def school_description(number):
 
 @app.route('/schools/price')
 def prices():
-	return ""
+	prices = ['Under 1000','Over 1000']
+	return render_template('categories.html', prices=prices)
 
 @app.route('/schools/price/<price_range>')
-def short_prices():
+def sort_prices():
 	return ""
 
 @app.route('/schools/city')
 def cities():
-	return ""
+	cities = ['Tokyo','Kyoto','Nagano','Fukuoka','Nagoya']
+	values = []
+	sql = "SELECT count(*) FROM mytable WHERE City="
+	for city in cities:
+		values.append([city, get_count_db(city,sql)])
+	return render_template('citycategories.html',cities=values)
 
 @app.route('/schools/city/<city>')
-def short_cities():
+def sort_cities(city):
 	return ""
 
-@app.route('/schools/accomodation')
-def accomodations():
-	return ""
+@app.route('/schools/durations')
+def durations():
+	durations = ['Under 12 months','12 months','18 months']
+	return render_template('categories.html', durations=durations)
 
-@app.route('/schools/accomodation/<type>')
-def short_accomodation():
+@app.route('/schools/duration/<duration>')
+def sort_duration():
 	return ""
 
 if __name__ == '__main__':

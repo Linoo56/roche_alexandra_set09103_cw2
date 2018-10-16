@@ -1,0 +1,45 @@
+{% extends "main.html" %}
+{% block style %}
+  <style>
+    img {
+      max-width:350px;
+      object-fit:cover;
+    }
+  </style>
+{% endblock %}
+{% block content %}
+  <div class="container">
+    <div class="header">
+      <h1>Welcome on Japanese Language Schools directory !</h1> 
+    </div>
+    <div class="row">
+      <div class="col-sm-6 col-md-4">
+        <div class="thumbnail">
+          <img src="" class="img-thumbnail">
+          <div class="caption">
+            <h3>Schools by location</h3>
+            <div><a href="{{ url_for('cities') }}" class="btn btn-primary" role="button">Check all cities</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        <div class="thumbnail">
+          <img src="" class="img-thumbnail">
+          <div class="caption">
+            <h3>Schools by price ranges</h3>
+            <div><a href="{{ url_for('prices') }}" class="btn btn-primary" role="button">Check prices</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4">
+        <div class="thumbnail">
+          <img src="" class="img-thumbnail">
+          <div class="caption">
+            <h3>Schools by duration</h3>
+            <div><a href="{{ url_for('durations') }}" class="btn btn-primary" role="button">Check all durations</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
