@@ -1,0 +1,41 @@
+{% extends "main.html" %}
+{% block content %}
+  {% for school in schools %}    
+    <div class="container">
+      <div class="header">
+        <h1>{{ school[1] }}</h1> 
+        <h2>Detailled informations :</h2>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-md-6">
+	      <dl class="dl-horizontal">
+		<dt>Name :</dt>
+		<dd>{{ school[1] }}</dd>
+		<dt>City :</dt>
+		<dd>{{ school[2] }}</dd>
+		{% if school[3] != None %}
+		  <dt>District :</dt>
+		  <dd>{{ school[3] }}</dd>
+		{% endif %}
+	      </dl>
+            </div>
+            <div class="col-md-6">
+	      <div class="panel panel-default">
+  	        <div class="panel-heading"><h3>Price details</h3></div>
+  	        <table class="table">
+    	 	  <tr>
+		    <th>Placement fee :</th>
+		    <th>{{ school[4] }} yens</th>
+		  </tr>
+  	        </table>
+	      </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}
+

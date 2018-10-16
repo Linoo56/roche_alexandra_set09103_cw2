@@ -18,7 +18,8 @@
   	  <dd>{{ school[2] }}</dd>
   	  <dt>Price per month (€) :</dt>
   	  <dd>{% if school[11] == None %} Not calculated {% else %}{{ school[11] }} {% endif %}</dd>
-  	</dl>
+	</dl>
+	<div><a href="{{ url_for('school_description', number=school[0]) }}">More informations</a></div>
         </div>	
       </div>
     {% endfor %}
