@@ -1,0 +1,20 @@
+{% extends "main.html" %}
+{% block style %}
+{% endblock %}
+{% block content %}
+  <div class="container">
+    <div class="header">
+      <h1>Categories</h1> 
+    </div>
+    <ul class="list-group">
+    {% for price in prices %}
+      <a href="{{ url_for('sort_prices', price_range=price[0]) }}"><li class="list-group-item">
+      {% for value in price[1] %}
+        <span class="badge">{{ value[0] }}</span>
+      {% endfor %}
+      {{ price[0] }}
+      </li></a>
+    {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

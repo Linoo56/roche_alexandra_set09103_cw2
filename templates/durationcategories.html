@@ -1,0 +1,20 @@
+{% extends "main.html" %}
+{% block style %}
+{% endblock %}
+{% block content %}
+  <div class="container">
+    <div class="header">
+      <h1>Categories</h1> 
+    </div>
+    <ul class="list-group">
+    {% for duration in durations %}
+      <a href="{{ url_for('sort_durations', duration=duration[0]) }}"><li class="list-group-item">
+      {% for value in duration[1] %}
+        <span class="badge">{{ value[0] }}</span>
+      {% endfor %}
+      {{ duration[0] }}
+      </li></a>
+    {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

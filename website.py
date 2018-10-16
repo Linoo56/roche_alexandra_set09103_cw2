@@ -28,6 +28,9 @@ def get_count_db(value,sql):
 	sql=sql+"'"+value+"'"
 	return db.cursor().execute(sql)
 	
+def get_count_db_simple(sql):
+	db=get_db()
+	return db.cursor().execute(sql)
 
 @app.route('/')
 def root():
@@ -48,10 +51,15 @@ def school_description(number):
 @app.route('/schools/price')
 def prices():
 	prices = ['Under 1000','Over 1000']
-	return render_template('categories.html', prices=prices)
+	values = []
+	sql1 = "SELECT count(*) FROM mytable WHERE Cost_per_month_in_Euro < 1000"
+	sql2 = "SELECT count(*) FROM mytable WHERE Cost_per_month_in_Euro >= 1000"
+	values.append([prices[0], get_count_db_simple(sql1)])
+	values.append([prices[1], get_count_db_simple(sql2)])
+	return render_template('pricecategories.html', prices=values)
 
 @app.route('/schools/price/<price_range>')
-def sort_prices():
+def sort_prices(price_range):
 	return ""
 
 @app.route('/schools/city')
@@ -70,10 +78,17 @@ def sort_cities(city):
 @app.route('/schools/durations')
 def durations():
 	durations = ['Under 12 months','12 months','18 months']
-	return render_template('categories.html', durations=durations)
+	values = []
+	sql1 = "SELECT count(*) FROM mytable WHERE Duration_Months < 12"
+	sql2 = "SELECT count(*) FROM mytable WHERE Duration_Months = 12"
+	sql3 = "SELECT count(*) FROM mytable WHERE Duration_Months = 18"
+	values.append([durations[0], get_count_db_simple(sql1)])
+	values.append([durations[1], get_count_db_simple(sql2)])
+	values.append([durations[2], get_count_db_simple(sql3)])	
+	return render_template('durationcategories.html', durations=values)
 
 @app.route('/schools/duration/<duration>')
-def sort_duration():
+def sort_durations():
 	return ""
 
 if __name__ == '__main__':
