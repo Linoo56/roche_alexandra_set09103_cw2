@@ -15,7 +15,7 @@
     <div class="row">
       <div class="col-sm-6 col-md-4">
         <div class="thumbnail">
-          <img src="" class="img-thumbnail">
+          <img src="{{ url_for('static', filename='img/city.jpg') }}" class="img-thumbnail">
           <div class="caption">
             <h3>Schools by location</h3>
             <div><a href="{{ url_for('cities') }}" class="btn btn-primary" role="button">Check all cities</a></div>
@@ -24,7 +24,7 @@
       </div>
       <div class="col-sm-6 col-md-4">
         <div class="thumbnail">
-          <img src="" class="img-thumbnail">
+          <img src="{{ url_for('static', filename='img/yens.png') }}" class="img-thumbnail">
           <div class="caption">
             <h3>Schools by price ranges</h3>
             <div><a href="{{ url_for('prices') }}" class="btn btn-primary" role="button">Check prices</a></div>
@@ -33,7 +33,7 @@
       </div>
       <div class="col-sm-6 col-md-4">
         <div class="thumbnail">
-          <img src="" class="img-thumbnail">
+          <img src="{{ url_for('static', filename='img/curriculumschedule.png') }}" class="img-thumbnail">
           <div class="caption">
             <h3>Schools by duration</h3>
             <div><a href="{{ url_for('durations') }}" class="btn btn-primary" role="button">Check all durations</a></div>
