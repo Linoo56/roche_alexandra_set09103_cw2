@@ -12,7 +12,13 @@
       {% for value in duration[1] %}
         <span class="badge">{{ value[0] }}</span>
       {% endfor %}
-      {{ duration[0] }}
+      {% if duration[0] == 'U12months' %}
+      Under 12 months
+      {% elif duration[0] == '12months'%}
+      12 months
+      {% elif duration[0] == '18months'%}
+      18 months
+      {% endif %}
       </li></a>
     {% endfor %}
     </ul>

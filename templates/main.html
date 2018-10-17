@@ -3,7 +3,12 @@
 	<title>Set09103 - Japanese schools in Japan</title>
 	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}", rel= "stylesheet" />
 	<script src=" {{ url_for('static', filename='js/bootstrap.min.js') }}",></script>
-	<style>
+	<script src=" {{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+        <script type="text/javascript">
+	  
+	</script>
+
+        <style>
 	  .header{padding-bottom : 15px}
 	  .panel-heading{font-weight : bold;
 			 font-size : 18px}
@@ -29,7 +34,7 @@
       <ul class="nav navbar-nav">
         <li><a href="{{ url_for('listing_schools') }}">Schools</a></li>
         <li class="dropdown">
-          <a href="{{ url_for('cities') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">By location<span class="caret"></span></a>
+          <a href="{{ url_for('cities') }}" class="dropdown-toggle" data-toggle="dropdown">By location<span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="#">Tokyo</a></li>
             <li><a href="#">Kyoto</a></li>
@@ -54,17 +59,22 @@
           </ul>
         </li>
       </ul>
-      <form class="navbar-form navbar-left">
+      <form class="navbar-form navbar-right" action="{{ url_for('search') }}" method="post">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search">
+          <input type="text" class="form-control" id="value" name="value" required>
         </div>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button type="submit" class="btn btn-default">Search</button>
       </form>
     </div>
   </div>
 </nav>  
 	
 {% block content %} {% endblock %}
+
+
+  <div class="footer-copyright text-center py-3">© 2018 Copyright:
+    <a href="https://mdbootstrap.com/bootstrap-tutorial/"> MDBootstrap.com</a>
+  </div>
 
 </body>
 </html>

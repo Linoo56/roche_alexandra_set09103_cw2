@@ -1,6 +1,20 @@
 {% extends "main.html" %}
 {% block style %}
   <style>
+    .thumbnail {
+      padding: 10px;
+    }
+    .subtitle {
+      margin:15px 0px 15px 0px;
+    }
+    .button-container {
+      text-align: center;
+      padding-top: 15px;
+    }
+    .schools-list {
+      width: 50%;
+      font-size: large;
+    }
     img {
       max-width:350px;
       object-fit:cover;
@@ -17,7 +31,7 @@
         <div class="thumbnail">
           <img src="{{ url_for('static', filename='img/city.jpg') }}" class="img-thumbnail">
           <div class="caption">
-            <h3>Schools by location</h3>
+            <h3 class="subtitle">Schools by location</h3>
             <div><a href="{{ url_for('cities') }}" class="btn btn-primary" role="button">Check all cities</a></div>
           </div>
         </div>
@@ -26,7 +40,7 @@
         <div class="thumbnail">
           <img src="{{ url_for('static', filename='img/yens.png') }}" class="img-thumbnail">
           <div class="caption">
-            <h3>Schools by price ranges</h3>
+            <h3 class="subtitle">Schools by price ranges</h3>
             <div><a href="{{ url_for('prices') }}" class="btn btn-primary" role="button">Check prices</a></div>
           </div>
         </div>
@@ -35,11 +49,12 @@
         <div class="thumbnail">
           <img src="{{ url_for('static', filename='img/curriculumschedule.png') }}" class="img-thumbnail">
           <div class="caption">
-            <h3>Schools by duration</h3>
+            <h3 class="subtitle">Schools by duration</h3>
             <div><a href="{{ url_for('durations') }}" class="btn btn-primary" role="button">Check all durations</a></div>
           </div>
         </div>
       </div>
     </div>
+    <div class="button-container"><a role="button" href="{{ url_for('listing_schools') }}" class="btn btn-primary schools-list">You can also browse the entire school list</a></div>
   </div>
 {% endblock %}

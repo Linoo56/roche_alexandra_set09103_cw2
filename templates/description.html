@@ -7,6 +7,11 @@
   tr .sub{
     font-weight: normal;
   }
+  .school-logo{
+    text-align: center;
+    margin: 20px;
+    margin-bottom: 30px;
+  }
 </style>
 {% endblock %}
 
@@ -21,6 +26,7 @@
         <div class="panel-body">
           <div class="row">
             <div class="col-md-6">
+              <div class="school-logo"><img src="{{ url_for('static', filename='img/school'+school[0]|string+'.jpg') }}"></div>
 	      <dl class="dl-horizontal">
 		<dt>Name :</dt>
 		<dd>{{ school[1] }}</dd>
