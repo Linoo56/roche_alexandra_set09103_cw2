@@ -1,9 +1,9 @@
 <!doctype html>
 <head>
 	<title>Set09103 - Japanese schools in Japan</title>
-	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}", rel= "stylesheet" />
-	<script src=" {{ url_for('static', filename='js/bootstrap.min.js') }}",></script>
 	<script src=" {{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+	<script src=" {{ url_for('static', filename='js/bootstrap.min.js') }}",></script>
+	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}", rel= "stylesheet" />
         <script type="text/javascript">
 	  
 	</script>
@@ -12,6 +12,14 @@
 	  .header{padding-bottom : 15px}
 	  .panel-heading{font-weight : bold;
 			 font-size : 18px}
+	  .navbar-sticky-bottom{color : #9d9d9d;
+			       text-align : center;
+			       padding-top : 5px;
+                               margin-bottom : 0; 
+                               position: absolute;
+                               bottom: 0px;
+                               width: 100%;}
+          .container{  }
 	</style>
 	{% block style %} {% endblock %}
 </head>
@@ -36,26 +44,26 @@
         <li class="dropdown">
           <a href="{{ url_for('cities') }}" class="dropdown-toggle" data-toggle="dropdown">By location<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#">Tokyo</a></li>
-            <li><a href="#">Kyoto</a></li>
-            <li><a href="#">Nagano</a></li>
-            <li><a href="#">Fukuoka</a></li>
-            <li><a href="#">Nagoya</a></li>
+            <li><a href="{{ url_for('sort_cities', city='Tokyo') }}">Tokyo</a></li>
+            <li><a href="{{ url_for('sort_cities', city='Kyoto') }}">Kyoto</a></li>
+            <li><a href="{{ url_for('sort_cities', city='Nagano') }}">Nagano</a></li>
+            <li><a href="{{ url_for('sort_cities', city='Fukuoka') }}">Fukuoka</a></li>
+            <li><a href="{{ url_for('sort_cities', city='Nagoya') }}">Nagoya</a></li>
           </ul>
         </li>
         <li class="dropdown">
           <a href="{{ url_for('prices') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">By price<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#">Under 1000€/month</a></li>
-            <li><a href="#">Over 1000€/month</a></li>
+            <li><a href="{{ url_for('sort_prices', price_range='U1000') }}">Under 1000€/month</a></li>
+            <li><a href="{{ url_for('sort_prices', price_range='O1000') }}">Over 1000€/month</a></li>
           </ul>
         </li>
         <li class="dropdown">
           <a href="{{ url_for('durations') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">By duration<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#">Under 12 months</a></li>
-            <li><a href="#">12 months</a></li>
-            <li><a href="#">18 months</a></li>
+            <li><a href="{{ url_for('sort_durations',duration='U12months') }}">Under 12 months</a></li>
+            <li><a href="{{ url_for('sort_durations',duration='12months') }}">12 months</a></li>
+            <li><a href="{{ url_for('sort_durations',duration='18months') }}">18 months</a></li>
           </ul>
         </li>
       </ul>
@@ -71,10 +79,11 @@
 	
 {% block content %} {% endblock %}
 
-
-  <div class="footer-copyright text-center py-3">© 2018 Copyright:
-    <a href="https://mdbootstrap.com/bootstrap-tutorial/"> MDBootstrap.com</a>
+<nav class="navbar navbar-default navbar-sticky-bottom navbar-inverse">
+  <div id="navbarCollapse" class="collapse navbar-collapse">
+   © 2018 Copyright:Alexandra Roche <br/>
+   Created as coursework of Advanced Web Technologies course (set09103) in Edinburgh Napier University
   </div>
-
+</nav>
 </body>
 </html>
