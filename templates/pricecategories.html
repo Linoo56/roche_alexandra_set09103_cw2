@@ -4,7 +4,7 @@
 {% block content %}
   <div class="container">
     <div class="header">
-      <h1>Categories</h1> 
+      <h1>Price categories</h1> 
     </div>
     <ul class="list-group">
     {% for price in prices %}
@@ -13,9 +13,9 @@
         <span class="badge">{{ value[0] }}</span>
       {% endfor %}
       {% if price[0] == 'U1000' %}
-      Under 1000€ per month
+      Less than 1000€ per month
       {% elif price[0] == 'O1000'%}
-      Over 1000€ per month
+      More than 1000€ per month
       {% endif %}
       </li></a>
     {% endfor %}

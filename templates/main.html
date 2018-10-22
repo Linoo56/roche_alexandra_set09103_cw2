@@ -16,7 +16,7 @@
 			       text-align : center;
 			       padding-top : 5px;
                                margin-bottom : 0; 
-                               position: absolute;
+			       position: fixed;
                                bottom: 0px;
                                width: 100%;}
           .container{  }
@@ -54,14 +54,14 @@
         <li class="dropdown">
           <a href="{{ url_for('prices') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">By price<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="{{ url_for('sort_prices', price_range='U1000') }}">Under 1000€/month</a></li>
-            <li><a href="{{ url_for('sort_prices', price_range='O1000') }}">Over 1000€/month</a></li>
+            <li><a href="{{ url_for('sort_prices', price_range='U1000') }}">Less than 1000€/month</a></li>
+            <li><a href="{{ url_for('sort_prices', price_range='O1000') }}">More than 1000€/month</a></li>
           </ul>
         </li>
         <li class="dropdown">
           <a href="{{ url_for('durations') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">By duration<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="{{ url_for('sort_durations',duration='U12months') }}">Under 12 months</a></li>
+            <li><a href="{{ url_for('sort_durations',duration='U12months') }}">Less than 12 months</a></li>
             <li><a href="{{ url_for('sort_durations',duration='12months') }}">12 months</a></li>
             <li><a href="{{ url_for('sort_durations',duration='18months') }}">18 months</a></li>
           </ul>

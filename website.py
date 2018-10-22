@@ -44,9 +44,17 @@ def listing_schools():
 
 @app.route('/schools/<number>')	
 def school_description(number):
-	db = get_db()
-	sql="SELECT * FROM mytable WHERE Number=%s" % number
-	return render_template('description.html', schools=db.cursor().execute(sql))
+	try:
+		db = get_db()
+		sql="SELECT * FROM mytable WHERE Number=%s" % number
+		schools=db.cursor().execute(sql)
+		print(schools)
+		if(schools[0] == None):
+			return render_template('error.html')
+		else:
+			return render_template('description.html', schools=schools)
+	except:
+		return render_template('error.html')
 
 @app.route('/schools/price')
 def prices():
