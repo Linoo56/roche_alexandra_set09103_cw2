@@ -1,7 +1,7 @@
 import ConfigParser, sqlite3
 from flask import Flask, request, render_template, g, abort
 app = Flask(__name__)
-db_location = 'var/sqlite3.db'
+db_location = 'var/sqlite3v2.db'
 
 def get_db():
 	db = getattr(g,'db', None)
@@ -49,10 +49,7 @@ def school_description(number):
 		sql="SELECT * FROM mytable WHERE Number=%s" % number
 		schools=db.cursor().execute(sql)
 		print(schools)
-		if(schools[0] == None):
-			return render_template('error.html')
-		else:
-			return render_template('description.html', schools=schools)
+		return render_template('description.html', schools=schools)
 	except:
 		return render_template('error.html')
 
