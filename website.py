@@ -1,7 +1,7 @@
 import ConfigParser, sqlite3
 from flask import Flask, request, render_template, g, abort
 app = Flask(__name__)
-db_location = 'var/sqlite3v2.db'
+db_location = 'var/sqlite3.db'
 
 def get_db():
 	db = getattr(g,'db', None)
