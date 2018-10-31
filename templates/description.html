@@ -21,10 +21,9 @@
 {% endblock %}
 
 {% block content %}
-  {% for school in schools %}    
     <div class="container">
       <div class="header">
-        <h1>{{ school[1] }}</h1> 
+        <h1>{{ school.name }}</h1> 
         <h2>Detailled information :</h2>
       </div>
       <div class="panel panel-default">
@@ -34,19 +33,15 @@
               <div class="school-logo"><img src="{{ url_for('static', filename='img/school'+school[0]|string+'.jpg') }}"></div>
 	      <dl class="dl-horizontal">
 		<dt>Name :</dt>
-		<dd>{{ school[1] }}</dd>
+		<dd>{{ school.name }}</dd>
 		<dt>City :</dt>
-		<dd>{{ school[2] }}</dd>
-		{% if school[3] != None %}
+		<dd>{{ school.city }}</dd>
+		{% if school.district != None %}
 		  <dt>District :</dt>
-		  <dd>{{ school[3] }}</dd>
+		  <dd>{{ school.district }}</dd>
 		{% endif %}
-		<dt>Duration :</dt>
-		<dd>{{ school[9] }} months</dd>
 		<dt>Website :</dt>
-		<dd><a href="{{ school[12] }}">{{ school[12] }}</a></dd>
-		<dt>Additional notes :</dt>
-		<dd>{% if school[13] != None %}{{ school[13] }} {% else %} {% endif %}</dd>
+		<dd><a href="{{ school.website }}">{{ school.website }}</a></dd>
 	      </dl>
             </div>
             <div class="col-md-6">
@@ -80,13 +75,12 @@
   	        </table>
 	      </div>
 	      <div>
-                <iframe class="google-maps" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBeerEti8uxGi9QiqSeYC7QpsxSpGGMD1k&q=%E6%9D%B1%E4%BA%AC%E4%B8%AD%E5%A4%AE%E6%97%A5%E6%9C%AC%E8%AA%9E%E5%AD%A6%E9%99%A2%2B%EF%BC%88TCJ%EF%BC%89%E6%97%A5%E6%9C%AC%E8%AA%9E%E5%AD%A6%E6%A0%A1" allowfullscreen="allowfullscreen">
+                <iframe class="google-maps" src="{{school.googleLink}}" allowfullscreen="allowfullscreen">
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  {% endfor %}
 {% endblock %}
 

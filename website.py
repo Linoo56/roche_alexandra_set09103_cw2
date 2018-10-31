@@ -1,7 +1,9 @@
 import ConfigParser, sqlite3
+from school import School
+from program import Program
 from flask import Flask, request, render_template, g, abort
 app = Flask(__name__)
-db_location = 'var/sqlite3.db'
+db_location = 'var/sqlite3v2.db'
 
 def get_db():
 	db = getattr(g,'db', None)
@@ -39,19 +41,21 @@ def root():
 @app.route('/schools/')
 def listing_schools():
 	db = get_db()
-	sql="SELECT * FROM mytable"
-	return render_template('boxes.html', schools=db.cursor().execute(sql))
+	sql="SELECT * FROM schools"
+	schoolsData = db.cursor().execute(sql)
+	schools = [] 
+	for t in schoolsData:
+		schools.append(School(t[0],t[1],t[2],t[3],t[4],t[5]))
+	return render_template('boxes.html', schools=schools)
 
-@app.route('/schools/<number>')	
-def school_description(number):
-	try:
-		db = get_db()
-		sql="SELECT * FROM mytable WHERE Number=%s" % number
-		schools=db.cursor().execute(sql)
-		print(schools)
-		return render_template('description.html', schools=schools)
-	except:
-		return render_template('error.html')
+@app.route('/schools/<schid>')	
+def school_description(schid):
+	db = get_db()
+	sql="SELECT * FROM schools WHERE id='"+schid+"'"
+	schoolData = db.cursor().execute(sql)
+	for t in schoolData:
+		theSchool = School(t[0],t[1],t[2],t[3],t[4],t[5])
+	return render_template('description.html', school=theSchool)
 
 @app.route('/schools/price')
 def prices():
