@@ -21,7 +21,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
+    <div class="container page">
       <div class="header">
         <h1>{{ school.name }}</h1> 
         <h2>Detailled information :</h2>
@@ -43,43 +43,78 @@
 		<dt>Website :</dt>
 		<dd><a href="{{ school.website }}">{{ school.website }}</a></dd>
 	      </dl>
-            </div>
-            <div class="col-md-6">
-	      <div class="panel panel-default">
-  	        <div class="panel-heading"><h3>Price details</h3></div>
-  	        <table class="table">
-    	 	  <tr>
-		    <th class="sub">Placement fee :</th>
-		    <th class="sub">{{ school[4] }} yens</th>
-		  </tr>
-    	 	  <tr>
-		    <th class="sub">Course fee :</th>
-		    <th class="sub">{{ school[5] }} yens</th>
-		  </tr>
-    	 	  <tr>
-		    <th class="sub">Residence fee :</th>
-		    <th class="sub">{% if school[7] != None %}{{ school[7] }} yens{% else %}No information provided{% endif %}</th>
-		  </tr>
-    	 	  <tr>
-		    <th>Total :</th>
-		    <th>{% if school[8] != None %}{{ school[8] }} yens{% else %}No information provided{% endif %}</th>
-		  </tr>
-    	 	  <tr>
-		    <th>Total per month:</th>
-		    <th>{% if school[10] != None %}{{ school[10] }} yens{% else %}No information provided{% endif %}</th>
-		  </tr>
-    	 	  <tr>
-		    <th><b>Total per month:</b></th>
-		    <th>{% if school[11] != None %}{{ school[11] }} euros{% else %}No information provided{% endif %}</th>
-		  </tr>
-  	        </table>
-	      </div>
-	      <div>
-                <iframe class="google-maps" src="{{school.googleLink}}" allowfullscreen="allowfullscreen">
+	    </div>
+              <div class="col-md-6">
+                <iframe class="google-maps" src="{{school.googleLink}}" allowfullscreen="allowfullscreen"></iframe>
               </div>
             </div>
-          </div>
         </div>
+      </div>
+      <div class="panel with-nav-tabs panel-default">
+         <div class="panel-heading">
+           <ul class="nav nav-tabs">
+	   {% for program in programs %}
+             <li><a href="#tab1default" data-toggle="tab">Default 1</a></li>
+           {% endfor %}
+           </ul>
+         </div>
+	 <div class="panel-body">
+	   <div class="tab-content">
+	   {% for program in programs %}
+	     <div class="tab-pane fade in active" id="tab1default">
+               <div class="row">
+                 <div class="col-md-6">
+	           <dl class="dl-horizontal">
+		     <dt>Duration :</dt>
+		     <dd>{{ program.duration }} months</dd>
+		     {% if program.accoType != ''%}
+		     <dt>Accomodation type :</dt>
+		     <dd>{{ program.accoType }}</dd>
+		     {% endif %}
+		     <dt>Visa Support :</dt>
+		     <dd>{{ program.visaSupp }}</dd>
+		     <dt>EJU preparation :</dt>
+		     <dd>{{ program.eju }}</dd>
+		     <dt>JLPT preparation :</dt>
+		     <dd>{{ program.jlpt }}</dd>
+		     <dt>Additionnal notes :</dt>
+		     <dd>{{ program.notes }}</dd>
+	           </dl>
+	         </div>
+                 <div class="col-md-6">
+	           <div class="panel panel-default">
+                     <div class="panel-heading">Price</div>
+                       <table class="table">
+                         <tbody>
+			   <tr>
+                             <td>Application fee :</td>
+                             <td>{{ program.appliFee }}</td>
+                           </tr>
+			   <tr>
+                             <td>Course fee :</td>
+                             <td>{{ program.courseFee }}</td>
+                           </tr>
+			   <tr>
+                             <td>Accomodation fee :</td>
+                             <td>{{ program.accoFee }}</td>
+                           </tr>
+			   <tr>
+                             <td>Total fee :</td>
+                             <td>{{ program.appliFee+program.courseFee+program.accoFee }}</td>
+                           </tr>
+			   <tr>
+                             <td>Price per month :</td>
+                             <td>{{ (program.appliFee+program.courseFee+program.accoFee)/program.duration }}</td>
+                           </tr>
+                         </tbody>
+                       </table>
+                     </div>
+                   </div>
+	         </div>
+               </div>
+	   {% endfor %}
+	   </div>
+	 </div>
       </div>
     </div>
 {% endblock %}
