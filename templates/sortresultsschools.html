@@ -9,7 +9,7 @@
 {% block content %}
   <div class="container page">
     <div class="header">
-      <h2>Search results</h2>
+      <h2>Sort results</h2>
     </div>
     {% for school in schools %}
       <div class="panel panel-default">
@@ -28,8 +28,8 @@
   	        <dt>City :</dt>
   	        <dd>{{ school.city }}</dd>
   	        <dt>District :</dt>
-  	        <dd>{{ school.district}}</dd>
-	        <dt class="school-link"><a href="{{ url_for('school_description', schid=school.schid) }}">More informations</a></dt>
+  	        <dd>{{ school.district }}</dd>
+	        <dt class="school-link"><a href="{{ url_for('school_description', schid=school.schid) }}">More information</a></dt>
 	      </dl>
 	    </div>
 	  </div>
@@ -38,5 +38,4 @@
     {% endfor %}
   </div>
 {% endblock %}  
-
 

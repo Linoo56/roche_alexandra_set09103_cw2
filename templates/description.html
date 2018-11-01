@@ -1,6 +1,10 @@
 {% extends "main.html" %}
 {% block style %}
 <style>
+
+  td:nth-child(2){
+    text-align-last: end;
+  }
   .google-maps {
     border: 0;
     width: -webkit-fill-available;
@@ -50,18 +54,19 @@
             </div>
         </div>
       </div>
+      {% if programs|length %}
       <div class="panel with-nav-tabs panel-default">
          <div class="panel-heading">
            <ul class="nav nav-tabs">
 	   {% for program in programs %}
-             <li><a href="#tab1default" data-toggle="tab">Default 1</a></li>
+             <li id="tabs"><a href="#tab{{loop.index}}default" data-toggle="tab">Program {{loop.index}}</a></li>
            {% endfor %}
            </ul>
          </div>
 	 <div class="panel-body">
 	   <div class="tab-content">
-	   {% for program in programs %}
-	     <div class="tab-pane fade in active" id="tab1default">
+	   {% for program in programs%}
+	     <div class="tab-pane fade" id="tab{{loop.index}}default">
                <div class="row">
                  <div class="col-md-6">
 	           <dl class="dl-horizontal">
@@ -87,24 +92,28 @@
                        <table class="table">
                          <tbody>
 			   <tr>
-                             <td>Application fee :</td>
-                             <td>{{ program.appliFee }}</td>
+                             <td><b>Application fee :</b></td>
+                             <td>{{ format_price(program.appliFee) }} yens</td>
                            </tr>
 			   <tr>
-                             <td>Course fee :</td>
-                             <td>{{ program.courseFee }}</td>
+                             <td><b>Course fee :</b></td>
+                             <td>{{ format_price(program.courseFee) }} yens</td>
                            </tr>
 			   <tr>
-                             <td>Accomodation fee :</td>
-                             <td>{{ program.accoFee }}</td>
+                             <td><b>Accomodation fee :</b></td>
+                             <td>{{ format_price(program.accoFee) }} yens</td>
                            </tr>
 			   <tr>
-                             <td>Total fee :</td>
-                             <td>{{ program.appliFee+program.courseFee+program.accoFee }}</td>
+                             <td><b>Total fee :</b></td>
+                             <td>{{ format_price(program.appliFee+program.courseFee+program.accoFee) }} yens</td>
                            </tr>
 			   <tr>
-                             <td>Price per month :</td>
-                             <td>{{ (program.appliFee+program.courseFee+program.accoFee)/program.duration }}</td>
+                             <td><b>Price per month (yens):</b></td>
+                             <td>{{ format_price((program.appliFee+program.courseFee+program.accoFee)/program.duration) }} yens</td>
+                           </tr>
+			   <tr>
+                             <td><b>Price per month (euros):</b></td>
+                             <td>{{ format_price(((program.appliFee+program.courseFee+program.accoFee)/program.duration)/130) }} euros</td>
                            </tr>
                          </tbody>
                        </table>
@@ -115,7 +124,16 @@
 	   {% endfor %}
 	   </div>
 	 </div>
+       {% endif %}
       </div>
     </div>
 {% endblock %}
 
+{% block scripts%}
+<script>
+var x = document.querySelectorAll("li#tabs");
+x[0].setAttribute("class", "active"); 
+var y = document.querySelectorAll("div:first-child.tab-pane.fade")
+y[0].setAttribute("class", "tab-pane fade in active")
+</script> 
+{% endblock %}
