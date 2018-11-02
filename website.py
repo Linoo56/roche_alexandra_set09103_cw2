@@ -1,9 +1,9 @@
 import ConfigParser, sqlite3
-from pyramid.config import Configurator
-from pyramid.response import Response
+import bcrypt
+from functools import wraps
 from school import School
 from program import Program
-from flask import Flask, request, render_template, g, abort
+from flask import Flask, request, render_template, g, abort, redirect, session, url_for
 app = Flask(__name__)
 db_location = 'var/sqlite3v2.db'
 
@@ -218,8 +218,18 @@ def search():
 def page_not_found(error):
 	return "The page you requested does not exist. Sorry. We still hope you have a nice day ! :D", 404
 
-@app.route('/register')
+@app.route('/register', methods=['GET'])
 def register_page():
+	return render_template('registerform.html')
+
+@app.route('/register', method=['POST'])
+def registration():
+	email = request.form['inputEmail']
+	password = request.form['inputPassword']
+	displayName = request.form['inputDisplayName']
+	country = request.form['inputCountry']
+
+	print email, password, displayName, country
 	return render_template('registerform.html')
 
 if __name__ == '__main__':
