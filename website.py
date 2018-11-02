@@ -1,4 +1,6 @@
 import ConfigParser, sqlite3
+from pyramid.config import Configurator
+from pyramid.response import Response
 from school import School
 from program import Program
 from flask import Flask, request, render_template, g, abort
@@ -216,6 +218,9 @@ def search():
 def page_not_found(error):
 	return "The page you requested does not exist. Sorry. We still hope you have a nice day ! :D", 404
 
+@app.route('/register')
+def register_page():
+	return render_template('registerform.html')
 
 if __name__ == '__main__':
 	app.run(host="0.0.0.0", debug=True)
