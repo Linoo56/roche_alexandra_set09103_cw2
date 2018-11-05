@@ -11,15 +11,15 @@
     </div>    
 
 
-    <form>
+    <form method="post" action="{{ url_for('registration') }}">
       <div class="form-group">
         <label for="inputEmail">* Email address</label>
-        <input required type="email" class="form-control" id="inputEmail1" name="inputEmail1 "placeholder="Email">
+        <input required type="email" class="form-control" id="inputEmail" name="inputEmail" placeholder="Email">
       </div>
 	
       <div class="form-group">
         <label for="inputPassword">* Password</label>
-        <input required type="password" class="form-control" id="inputPassword" name="inputPassword "placeholder="Password">
+        <input required type="password" class="form-control" id="inputPassword" name="inputPassword" placeholder="Password">
       </div>
 
       <hr/>

@@ -42,6 +42,16 @@ def get_count_db_simple(sql):
 	db=get_db()
 	return db.cursor().execute(sql)
 
+def init(app):
+	config = ConfigParser.ConfigParser()
+	try:
+		config_location="etc/defaults.cfg"
+		config.read(config_location)
+		
+		app.config['SECRET_KEY'] = config.get("config", "secret_key")
+	except:
+		return render_template('error.html')
+
 @app.route('/')
 def root():
 	return render_template('home.html')
@@ -214,23 +224,34 @@ def search():
 
 	return render_template('searchresults.html', schools=schools, search=value)
 
-@app.errorhandler(404)
-def page_not_found(error):
-	return "The page you requested does not exist. Sorry. We still hope you have a nice day ! :D", 404
 
 @app.route('/register', methods=['GET'])
 def register_page():
 	return render_template('registerform.html')
 
-@app.route('/register', method=['POST'])
+@app.route('/register', methods=['POST'])
 def registration():
 	email = request.form['inputEmail']
-	password = request.form['inputPassword']
+	password = bcrypt.hashpw(str(request.form['inputPassword']), bcrypt.gensalt())
 	displayName = request.form['inputDisplayName']
 	country = request.form['inputCountry']
+
+	db = get_db()
+	sql = "INSERT INTO users VALUES (?,?,?,?,?)"
+	db.cursor().execute(sql, (email, password, displayName, country, 1))
+	db.commit()	
 
 	print email, password, displayName, country
 	return render_template('registerform.html')
 
+@app.route('/login', methods=['GET'])
+def login_page():
+	return render_template('login.html')
+
+@app.errorhandler(404)
+def page_not_found(error):
+	return render_template('error.html'), 404
+
 if __name__ == '__main__':
+	init(app)
 	app.run(host="0.0.0.0", debug=True)
