@@ -3,8 +3,11 @@ import bcrypt
 from functools import wraps
 from school import School
 from program import Program
-from flask import Flask, request, render_template, g, abort, redirect, session, url_for
+from flask import Flask, request, flash, render_template, g, abort, redirect, session, url_for
 app = Flask(__name__)
+config = ConfigParser.ConfigParser()
+config.read('etc/defaults.cfg')
+app.secret_key = config.get('config','secret_key')  
 db_location = 'var/sqlite3v2.db'
 
 def get_db():
@@ -105,7 +108,6 @@ def prices():
 	values = []
 	sql = "SELECT duration, appli_fee, course_fee, acco_fee FROM programs"
 	for result in db.cursor().execute(sql):
-		print(result[1],result[2],result[3],result[0])
 		if (result[3] != ''):
 			if (result[1] != '' and ((result[1]+result[2]+result[3])/result[0])/130 < 1000):
 				counts[0] = counts[0]+1
@@ -116,7 +118,6 @@ def prices():
 			
 	values.append([prices[0], counts[0]])
 	values.append([prices[1], counts[1]])
-	print(values)
 	return render_template('pricecategories.html', prices=values)
 
 @app.route('/programs/price/<price_range>')
@@ -141,7 +142,6 @@ def sort_prices(price_range):
 					selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
 	elif price_range == 'O1000':
 		for program in programs:
-			print(program.accoFee != '', program.appliFee == '')
 			if program.accoFee != '' and program.appliFee == '' and ((program.courseFee+program.accoFee)/program.duration)/130 >= 1000:
 				school = db.cursor().execute(sqlsch+program.schId+"'")
 				for t in school:
@@ -150,7 +150,6 @@ def sort_prices(price_range):
 			if program.accoFee != '' and program.appliFee != '' and ((program.appliFee+program.courseFee+program.accoFee)/program.duration)/130 >= 1000:
 				school = db.cursor().execute(sqlsch+program.schId+"'")
 				for t in school:
-					print(t)
 					selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
 	else:
 		abort(404) 
@@ -247,6 +246,24 @@ def registration():
 @app.route('/login', methods=['GET'])
 def login_page():
 	return render_template('login.html')
+
+@app.route('/login', methods=['POST'])
+def login():
+	db = get_db()
+	sql = "SELECT email, password, display_name FROM users WHERE email = ?"
+	email = request.form['inputEmail']
+	password = request.form['inputPassword']
+	user = db.cursor().execute(sql, ([email])).fetchone()
+	if(user[1].encode('utf-8') == bcrypt.hashpw(password.encode('utf-8'), user[1].encode('utf-8'))):
+		print "Valide"
+		session['logged_in'] = True
+		session['user'] = email
+		session['user_name'] = user[2]
+		flash("Welcome back "+session['user_name']+" !")
+		return redirect(url_for('root'))
+	else:
+		print "Pas valide"
+		return render_template('login.html')
 
 @app.errorhandler(404)
 def page_not_found(error):

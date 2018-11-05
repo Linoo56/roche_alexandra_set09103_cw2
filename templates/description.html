@@ -125,6 +125,10 @@
 	   </div>
 	 </div>
        {% endif %}
+
+       {% if session['logged_in'] %}
+         <button type="button" class="btn btn-primary btn-block">You can submit a review of the school</button>
+       {% endif %}
       </div>
     </div>
 {% endblock %}

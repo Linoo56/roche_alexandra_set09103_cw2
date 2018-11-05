@@ -10,7 +10,7 @@
     <h2>Log in</h2>
     </div>    
 
-    <form method="post" action="">
+    <form method="post" action="{{ url_for('login') }}">
       <div class="form-group">
         <label for="inputEmail">Email address</label>
         <input required type="email" class="form-control" id="inputEmail" name="inputEmail" placeholder="Email">

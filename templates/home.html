@@ -1,6 +1,9 @@
 {% extends "main.html" %}
 {% block style %}
   <style>
+    .alert-info{
+      text-align:center;
+    }
     .thumbnail {
       padding: 10px;
     }
@@ -24,6 +27,15 @@
 {% block content %}
   <div class="container page">
     <div class="header">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-info">
+              <h3>{{ message }}</h3>
+            </div>
+          {% endfor %}
+        {% endif %}	
+      {% endwith %}  
       <h1>Welcome on Japanese Language Schools directory !</h1>
       <h2>For students, by students</h2> 
     </div>
