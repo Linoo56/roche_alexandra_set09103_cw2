@@ -10,6 +10,8 @@ config.read('etc/defaults.cfg')
 app.secret_key = config.get('config','secret_key')  
 db_location = 'var/sqlite3v2.db'
 
+currencies = ['euro', 'pound', 'dollar']
+
 def get_db():
 	db = getattr(g,'db', None)
 	if db is None:
@@ -57,6 +59,7 @@ def init(app):
 
 @app.route('/')
 def root():
+	session['currency'] = 'euro'
 	return render_template('home.html')
 
 @app.route('/schools/')
@@ -103,15 +106,23 @@ def school_description(schid):
 @app.route('/programs/price')
 def prices():
 	db = get_db()
+	if session['currency'] == 'euro':
+		currency = 130
+	elif session['currency'] == 'pound':
+		currency = 145.5
+	elif session['currency'] == 'dollar':
+		currency = 112
+	else:
+		currency = 130
 	prices = ['U1000','O1000']
 	counts = [0, 0]
 	values = []
 	sql = "SELECT duration, appli_fee, course_fee, acco_fee FROM programs"
 	for result in db.cursor().execute(sql):
 		if (result[3] != ''):
-			if (result[1] != '' and ((result[1]+result[2]+result[3])/result[0])/130 < 1000):
+			if (result[1] != '' and ((result[1]+result[2]+result[3])/result[0])/currency < 1000):
 				counts[0] = counts[0]+1
-			elif (result[1] == '' and ((result[2]+result[3])/result[0])/130 < 1000):
+			elif (result[1] == '' and ((result[2]+result[3])/result[0])/currency < 1000):
 				counts[0] = counts[0]+1
 			else:
 				counts[1] = counts[1]+1
@@ -123,6 +134,14 @@ def prices():
 @app.route('/programs/price/<price_range>')
 def sort_prices(price_range):	
 	db = get_db()
+	if session['currency'] == 'euro':
+		currency = 130
+	elif session['currency'] == 'pound':
+		currency = 145.5
+	elif session['currency'] == 'dollar':
+		currency = 112
+	else:
+		currency == 130
 	selectedprograms = []
 	programs = []
 	sql="SELECT * FROM programs"
@@ -132,22 +151,22 @@ def sort_prices(price_range):
 		programs.append(Program(u[0],u[1],u[2],u[3],u[4],u[5],u[6],u[7],u[8],u[9],u[10]))
 	if price_range == 'U1000':
 		for program in programs:
-			if program.accoFee != '' and program.appliFee != '' and ((program.appliFee+program.courseFee+program.accoFee)/program.duration)/130 < 1000:
+			if program.accoFee != '' and program.appliFee != '' and ((program.appliFee+program.courseFee+program.accoFee)/program.duration)/currency < 1000:
 				school = db.cursor().execute(sqlsch+program.schId+"'")
 				for t in school:
 					selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
-			if program.accoFee != '' and program.appliFee == '' and ((program.courseFee+program.accoFee)/program.duration)/130 < 1000:
+			if program.accoFee != '' and program.appliFee == '' and ((program.courseFee+program.accoFee)/program.duration)/currency < 1000:
 				school = db.cursor().execute(sqlsch+program.schId+"'")
 				for t in school:
 					selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
 	elif price_range == 'O1000':
 		for program in programs:
-			if program.accoFee != '' and program.appliFee == '' and ((program.courseFee+program.accoFee)/program.duration)/130 >= 1000:
+			if program.accoFee != '' and program.appliFee == '' and ((program.courseFee+program.accoFee)/program.duration)/currency >= 1000:
 				school = db.cursor().execute(sqlsch+program.schId+"'")
 				for t in school:
 					selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
 	
-			if program.accoFee != '' and program.appliFee != '' and ((program.appliFee+program.courseFee+program.accoFee)/program.duration)/130 >= 1000:
+			if program.accoFee != '' and program.appliFee != '' and ((program.appliFee+program.courseFee+program.accoFee)/program.duration)/currency >= 1000:
 				school = db.cursor().execute(sqlsch+program.schId+"'")
 				for t in school:
 					selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
@@ -264,6 +283,14 @@ def login():
 	else:
 		print "Pas valide"
 		return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+	session.pop('user', None)
+	session.pop('logged_in',None)
+	session.pop('user_name', None)
+	return redirect(url_for('root'))
+
 
 @app.errorhandler(404)
 def page_not_found(error):

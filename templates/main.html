@@ -4,6 +4,8 @@
 	<script src=" {{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
 	<script src=" {{ url_for('static', filename='js/bootstrap.min.js') }}",></script>
 	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}", rel= "stylesheet" />
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.5.0/css/all.css' integrity='sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU' crossorigin='anonymous'>
 
         <style>
 	  .header{padding-bottom : 15px}
@@ -40,28 +42,11 @@
         <li><a href="{{ url_for('listing_schools') }}">Schools</a></li>
         <li><a href="{{ url_for('listing_programs') }}">Programs</a></li>
         <li class="dropdown">
-          <a href="{{ url_for('cities') }}" class="dropdown-toggle" data-toggle="dropdown">By location<span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Categories<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="{{ url_for('sort_cities', city='Tokyo') }}">Tokyo</a></li>
-            <li><a href="{{ url_for('sort_cities', city='Kyoto') }}">Kyoto</a></li>
-            <li><a href="{{ url_for('sort_cities', city='Nagano') }}">Nagano</a></li>
-            <li><a href="{{ url_for('sort_cities', city='Fukuoka') }}">Fukuoka</a></li>
-            <li><a href="{{ url_for('sort_cities', city='Nagoya') }}">Nagoya</a></li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a href="{{ url_for('prices') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">By price<span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="{{ url_for('sort_prices', price_range='U1000') }}">Less than 1000€/month</a></li>
-            <li><a href="{{ url_for('sort_prices', price_range='O1000') }}">More than 1000€/month</a></li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a href="{{ url_for('durations') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">By duration<span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="{{ url_for('sort_durations',duration='12months') }}">12 months</a></li>
-            <li><a href="{{ url_for('sort_durations',duration='18months') }}">18 months</a></li>
-            <li><a href="{{ url_for('sort_durations',duration='24months') }}">24 months</a></li>
+            <li><a href="{{ url_for('cities') }}">Location</a></li>
+            <li><a href="{{ url_for('prices') }}">Prices</a></li>
+            <li><a href="{{ url_for('durations') }}">Duration</a></li>
           </ul>
         </li>
       </ul>
@@ -72,11 +57,20 @@
           <ul class="dropdown-menu">
             <li><a href="#">My profile</a></li>
             <li><a href="#">My favorites</a></li>
-            <li><a href="#">Log out</a></li>
+            <li><a href="{{ url_for('logout') }}">Log out</a></li>
           </ul>
         </li>
       </ul>
       {% else %}
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class='fas fa-euro-sign'></i><span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#"><i class='fas fa-dollar-sign'></i></a></li>
+            <li><a href="#"><i class='fas fa-pound-sign'></i></a></li>
+          </ul>
+        </li>
+      </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="{{ url_for('login_page') }}">Log in</a></li>
       </ul>
