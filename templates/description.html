@@ -99,11 +99,19 @@
                              <td><b>Course fee :</b></td>
                              <td>{{ format_price(program.courseFee) }} yens</td>
                            </tr>
+			   {% if program.accoFee is number %}
 			   <tr>
                              <td><b>Accomodation fee :</b></td>
                              <td>{{ format_price(program.accoFee) }} yens</td>
                            </tr>
+			   {% else %}
 			   <tr>
+                             <td><b>Accomodation fee :</b></td>
+                             <td>Not calculated</td>
+                           </tr>
+			   {% endif %}
+			   {% if program.accoFee is number %}
+                           <tr>
                              <td><b>Total fee :</b></td>
                              <td>{{ format_price(program.appliFee+program.courseFee+program.accoFee) }} yens</td>
                            </tr>
@@ -115,6 +123,7 @@
                              <td><b>Price per month (euros):</b></td>
                              <td>{{ format_price(((program.appliFee+program.courseFee+program.accoFee)/program.duration)/130) }} euros</td>
                            </tr>
+			   {% endif %}
                          </tbody>
                        </table>
                      </div>

@@ -28,7 +28,10 @@ def close_db_connection(exception):
 @app.context_processor
 def utility_processor():
 	def format_price(value):
-		return "{:,.2f}".format(value);
+		if value != "":
+			return "{:,.2f}".format(value)
+		else:
+			return value
 	return dict(format_price=format_price)
 
 def init_db():
