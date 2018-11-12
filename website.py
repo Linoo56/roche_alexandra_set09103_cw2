@@ -12,6 +12,15 @@ db_location = 'var/sqlite3v2.db'
 
 currencies = ['euro', 'pound', 'dollar']
 
+def requires_login(f):
+	@wraps(f)
+	def decorated(*args, **kwargs):
+		status = session.get('logged_in', False)
+		if not status:
+			return redirect(url_for('root'))
+		return f(*args, **kwargs)
+	return decorated
+
 def get_db():
 	db = getattr(g,'db', None)
 	if db is None:
@@ -49,6 +58,7 @@ def get_count_db(value,sql):
 def get_count_db_simple(sql):
 	db=get_db()
 	return db.cursor().execute(sql)
+
 
 def init(app):
 	config = ConfigParser.ConfigParser()
@@ -294,6 +304,15 @@ def logout():
 	session.pop('user_name', None)
 	return redirect(url_for('root'))
 
+
+@app.route('/profile')
+@requires_login
+def profile():
+	db = get_db()
+	sql = "SELECT email, display_name, country FROM users WHERE email = ?"
+	user = db.cursor().execute(sql, ([session['user']])).fetchone()
+	print user
+	return render_template('profile.html', user=user)
 
 @app.errorhandler(404)
 def page_not_found(error):

@@ -21,6 +21,21 @@
     margin: 20px;
     margin-bottom: 30px;
   }
+  .heart-container span{
+    font-size: x-large;
+  }
+  .dl-horizontal.school dd{
+    margin-left: 110px
+  }
+  .dl-horizontal.school dt{
+    text-align: left;
+    padding-left: 30px;
+    width: 110px
+  }
+  .heart-container{
+    padding:10px 0 0 10px;
+    text-align:center;
+  }
 </style>
 {% endblock %}
 
@@ -33,9 +48,12 @@
       <div class="panel panel-default">
         <div class="panel-body">
           <div class="row">
-            <div class="col-md-6">
+	    <div class="col-md-1 heart-container">
+	      <span class="glyphicon glyphicon-heart-empty" aria-hidden="true">
+	    </div>
+            <div class="col-md-5">
               <div class="school-logo"><img src="{{ url_for('static', filename='img/school'+school.schid|string+'.jpg') }}"></div>
-	      <dl class="dl-horizontal">
+	      <dl class="dl-horizontal school">
 		<dt>Name :</dt>
 		<dd>{{ school.name }}</dd>
 		<dt>City :</dt>
@@ -68,7 +86,10 @@
 	   {% for program in programs%}
 	     <div class="tab-pane fade" id="tab{{loop.index}}default">
                <div class="row">
-                 <div class="col-md-6">
+	         <div class="col-md-1 heart-container">
+	           <span class="glyphicon glyphicon-heart-empty" aria-hidden="true">
+	         </div>
+                 <div class="col-md-5">
 	           <dl class="dl-horizontal">
 		     <dt>Duration :</dt>
 		     <dd>{{ program.duration }} months</dd>
@@ -135,10 +156,10 @@
 	 </div>
        {% endif %}
 
-       {% if session['logged_in'] %}
-         <button type="button" class="btn btn-primary btn-block">You can submit a review of the school</button>
-       {% endif %}
       </div>
+     {% if session['logged_in'] %}
+       <button type="button" class="btn btn-primary btn-block">You can submit a review of the school</button>
+     {% endif %}
     </div>
 {% endblock %}
 
@@ -149,4 +170,10 @@ x[0].setAttribute("class", "active");
 var y = document.querySelectorAll("div:first-child.tab-pane.fade")
 y[0].setAttribute("class", "tab-pane fade in active")
 </script> 
+<script>
+document.querySelectorAll(".heart-container span").addEventListener("click", updFavorite)
+function updFavorite(){
+  if document.querySelectorAll(".heart-container span").className = ""
+}
+</script>
 {% endblock %}
