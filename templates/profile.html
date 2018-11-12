@@ -1,6 +1,9 @@
 {% extends "main.html" %}
 
 {% block style %}
+  <style>
+    
+  </style>
 {% endblock %}
 
 {% block content %}
@@ -23,6 +26,15 @@
         Your favorites
       </div>
       <div class="panel-body">
+	<div class="row">
+	  {% for favorite in favorites %}
+	  <div class="col-xs-6 col-md-3">
+	    <a href="{{ url_for('school_description', schid=favorite[0]) }}" class="thumbnail">
+              <img src="{{ url_for('static', filename='img/school'+favorite[0]+'.jpg') }}">
+            </a>
+          </div>
+	  {% endfor %}
+        </div>
       </div>
     </div>
     <div class="panel panel-default">

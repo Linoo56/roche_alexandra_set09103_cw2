@@ -42,6 +42,7 @@ def utility_processor():
 		else:
 			return value
 	return dict(format_price=format_price)
+	
 
 def init_db():
 	with app.app_context():
@@ -105,16 +106,18 @@ def listing_programs():
 @app.route('/schools/<schid>')	
 def school_description(schid):
 	db = get_db()
+	fav=db.cursor().execute("SELECT * FROM favorites WHERE schid=? AND user_email=?", (schid, session['user'])).fetchone()
 	sqlSch="SELECT * FROM schools WHERE schid='"+schid+"'"
 	sqlPro="SELECT * FROM programs WHERE schid='"+schid+"'"
 	schoolData = db.cursor().execute(sqlSch)
 	programsData = db.cursor().execute(sqlPro)
 	schoolPrograms = []
+	print fav
 	for t in schoolData:
 		theSchool = School(t[0],t[1],t[2],t[3],t[4],t[5])
 	for u in programsData:
 		schoolPrograms.append(Program(u[0],u[1],u[2],u[3],u[4],u[5],u[6],u[7],u[8],u[9],u[10]))
-	return render_template('description.html', school=theSchool, programs=schoolPrograms)
+	return render_template('description.html', school=theSchool, programs=schoolPrograms, fav=fav)
 
 @app.route('/programs/price')
 def prices():
@@ -311,8 +314,42 @@ def profile():
 	db = get_db()
 	sql = "SELECT email, display_name, country FROM users WHERE email = ?"
 	user = db.cursor().execute(sql, ([session['user']])).fetchone()
+	favorites = db.cursor().execute("SELECT schid FROM favorites WHERE user_email = ? LIMIT 4", ([session['user']])).fetchall()
 	print user
-	return render_template('profile.html', user=user)
+	return render_template('profile.html', user=user, favorites=favorites)
+
+@app.route('/profile/favorites')
+@requires_login
+def favorites():
+	db = get_db()
+	favschools= []
+	favorites = db.cursor().execute("SELECT schid FROM favorites WHERE user_email = ?", ([session['user']])).fetchall()
+	for favorite in favorites:
+		print favorite
+		u = db.cursor().execute("SELECT * FROM schools WHERE schid=?", favorite).fetchone()
+		favschools.append(School(u[0],u[1],u[2],u[3],u[4],u[5]))
+	print favschools
+	return render_template('favorites.html', favorites=favschools)
+
+@app.route('/addfav/<schid>')
+def add_school_favorite(schid):
+	db = get_db()
+	sql = "INSERT INTO favorites VALUES (?,?,'')"
+	school = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [schid]).fetchone()
+	db.cursor().execute(sql,(session['user'], schid))
+	db.commit()
+	flash(school[0]+" has been added to your favorites schools")
+	return redirect(request.referrer)
+
+@app.route('/delfav/<schid>')
+def del_school_favorite(schid):
+	db = get_db()
+	sql = "DELETE FROM favorites WHERE schid=? AND user_email=?"
+	school = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [schid]).fetchone()
+	db.cursor().execute(sql,(schid, session['user']))
+	db.commit()
+	flash(school[0]+" has been removed from your favorites schools")
+	return redirect(request.referrer)
 
 @app.errorhandler(404)
 def page_not_found(error):

@@ -42,6 +42,15 @@
 {% block content %}
     <div class="container page">
       <div class="header">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-info">
+              <h3>{{ message }}</h3>
+            </div>
+          {% endfor %}
+        {% endif %}	
+      {% endwith %}  
         <h1>{{ school.name }}</h1> 
         <h2>Detailled information :</h2>
       </div>
@@ -49,7 +58,11 @@
         <div class="panel-body">
           <div class="row">
 	    <div class="col-md-1 heart-container">
-	      <span class="glyphicon glyphicon-heart-empty" aria-hidden="true">
+	    {% if fav %}
+	      <a href="{{ url_for('del_school_favorite', schid=school.schid) }}"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span></a>
+	    {% else %}	
+	      <a href="{{ url_for('add_school_favorite', schid=school.schid) }}"><span class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span></a>
+	    {% endif %}
 	    </div>
             <div class="col-md-5">
               <div class="school-logo"><img src="{{ url_for('static', filename='img/school'+school.schid|string+'.jpg') }}"></div>
@@ -170,10 +183,4 @@ x[0].setAttribute("class", "active");
 var y = document.querySelectorAll("div:first-child.tab-pane.fade")
 y[0].setAttribute("class", "tab-pane fade in active")
 </script> 
-<script>
-document.querySelectorAll(".heart-container span").addEventListener("click", updFavorite)
-function updFavorite(){
-  if document.querySelectorAll(".heart-container span").className = ""
-}
-</script>
 {% endblock %}
