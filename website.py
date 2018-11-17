@@ -106,18 +106,20 @@ def listing_programs():
 @app.route('/schools/<schid>')	
 def school_description(schid):
 	db = get_db()
-	fav=db.cursor().execute("SELECT * FROM favorites WHERE schid=? AND user_email=?", (schid, session['user'])).fetchone()
 	sqlSch="SELECT * FROM schools WHERE schid='"+schid+"'"
 	sqlPro="SELECT * FROM programs WHERE schid='"+schid+"'"
 	schoolData = db.cursor().execute(sqlSch)
 	programsData = db.cursor().execute(sqlPro)
 	schoolPrograms = []
-	print fav
 	for t in schoolData:
 		theSchool = School(t[0],t[1],t[2],t[3],t[4],t[5])
 	for u in programsData:
 		schoolPrograms.append(Program(u[0],u[1],u[2],u[3],u[4],u[5],u[6],u[7],u[8],u[9],u[10]))
-	return render_template('description.html', school=theSchool, programs=schoolPrograms, fav=fav)
+	try:
+		fav=db.cursor().execute("SELECT * FROM favorites WHERE schid=? AND user_email=?", (schid, session['user'])).fetchone()
+		return render_template('description.html', school=theSchool, programs=schoolPrograms, fav=fav)
+	except KeyError:
+		return render_template('description.html', school=theSchool, programs=schoolPrograms)
 
 @app.route('/programs/price')
 def prices():
