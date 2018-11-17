@@ -116,7 +116,7 @@ def school_description(schid):
 	for u in programsData:
 		schoolPrograms.append(Program(u[0],u[1],u[2],u[3],u[4],u[5],u[6],u[7],u[8],u[9],u[10]))
 	try:
-		fav=db.cursor().execute("SELECT * FROM favorites WHERE schid=? AND user_email=?", (schid, session['user'])).fetchone()
+		fav = db.cursor().execute("SELECT * FROM favorites WHERE schid=? AND user_email=?", (schid, session['user'])).fetchone()
 		return render_template('description.html', school=theSchool, programs=schoolPrograms, fav=fav)
 	except KeyError:
 		return render_template('description.html', school=theSchool, programs=schoolPrograms)
@@ -334,6 +334,7 @@ def favorites():
 	return render_template('favorites.html', favorites=favschools)
 
 @app.route('/addfav/<schid>')
+@requires_login
 def add_school_favorite(schid):
 	db = get_db()
 	sql = "INSERT INTO favorites VALUES (?,?,'')"
@@ -344,6 +345,7 @@ def add_school_favorite(schid):
 	return redirect(request.referrer)
 
 @app.route('/delfav/<schid>')
+@requires_login
 def del_school_favorite(schid):
 	db = get_db()
 	sql = "DELETE FROM favorites WHERE schid=? AND user_email=?"
@@ -352,6 +354,13 @@ def del_school_favorite(schid):
 	db.commit()
 	flash(school[0]+" has been removed from your favorites schools")
 	return redirect(request.referrer)
+
+@app.route('/schools/<schid>/submit-review')
+@requires_login
+def submit_review(schid):
+	db = get_db()
+	school = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [schid]).fetchone()
+	return render_template('submitreview.html', school=school)
 
 @app.errorhandler(404)
 def page_not_found(error):
