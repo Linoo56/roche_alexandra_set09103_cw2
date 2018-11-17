@@ -121,6 +121,13 @@ def school_description(schid):
 	except KeyError:
 		return render_template('description.html', school=theSchool, programs=schoolPrograms)
 
+@app.route('/schools/<schid>/submit-review')
+@requires_login
+def submit_review(schid):
+	db = get_db()
+	school = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [schid]).fetchone()
+	return render_template('submitreview.html', school=school)
+
 @app.route('/programs/price')
 def prices():
 	db = get_db()
@@ -354,13 +361,6 @@ def del_school_favorite(schid):
 	db.commit()
 	flash(school[0]+" has been removed from your favorites schools")
 	return redirect(request.referrer)
-
-@app.route('/schools/<schid>/submit-review')
-@requires_login
-def submit_review(schid):
-	db = get_db()
-	school = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [schid]).fetchone()
-	return render_template('submitreview.html', school=school)
 
 @app.errorhandler(404)
 def page_not_found(error):
