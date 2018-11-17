@@ -171,7 +171,7 @@
 
       </div>
      {% if session['logged_in'] %}
-       <button type="button" class="btn btn-primary btn-block">You can submit a review of the school</button>
+       <button type="button" class="btn btn-primary btn-block" href="{{ url_for('submit_review') }}">You can submit a review of the school</button>
      {% endif %}
     </div>
 {% endblock %}
