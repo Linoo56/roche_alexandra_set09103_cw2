@@ -126,9 +126,9 @@
                        <table class="table">
                          <tbody>
 			   <tr>
-                             <td><b>Application fee :</b></td>
-                             <td>{{ format_price(program.appliFee) }} yens</td>
-                           </tr>
+                   <td><b>Application fee :</b></td>
+                   <td>{{ format_price(program.appliFee) }} yens</td>
+               </tr>
 			   <tr>
                              <td><b>Course fee :</b></td>
                              <td>{{ format_price(program.courseFee) }} yens</td>
@@ -171,7 +171,7 @@
 
       </div>
      {% if session['logged_in'] %}
-       <button type="button" class="btn btn-primary btn-block" href="{{ url_for('submit_review') }}">You can submit a review of the school</button>
+       <button type="button" class="btn btn-primary btn-block" href="{{ url_for('submit_review',school.name) }}">You can submit a review of the school</button>
      {% endif %}
     </div>
 {% endblock %}
