@@ -41,11 +41,5 @@
 {% block scripts %}
 <script>   
   $('.raty').raty();
-  var x = document.querySelectorAll("img")
-  var y;
-  for (y in x) {
-    classValue = y.getAttribute("src");
-    y.setAttribute("src", "/static/img/"+classValue)
-  }
 </script>
 {% endblock %}
