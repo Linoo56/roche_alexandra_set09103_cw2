@@ -1,6 +1,6 @@
 {% extends "main.html" %}
 {% block style %}
-    <script src="jquery.raty.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery.raty.js') }}"></script>
     <style>
     </style>
 {% endblock %}
@@ -8,10 +8,10 @@
     <div class="container page">
         <div class="header">
             <h2>Submit a review</h2>
-            <h3>About the school : {{ school.name }} }}</h3>>
+            <h3>About the school : {{ school.name }}</h3>
         </div>
 
-        <form method="post" action="{{ url_for('submit_review') }}">
+        <form method="post" action="{{ url_for('submit_review', schid=school.schid) }}">
             <div class="form-group">
                 <label for="inputEmail">* Score</label>
                 <div class="raty"></div>
@@ -39,5 +39,13 @@
 {% endblock %}
 
 {% block scripts %}
-    $('.raty').raty();
+<script>   
+  $('.raty').raty();
+  var x = document.querySelectorAll("img")
+  var y;
+  for (y in x) {
+    classValue = y.getAttribute("src");
+    y.setAttribute("src", "/static/img/"+classValue)
+  }
+</script>
 {% endblock %}
