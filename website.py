@@ -121,12 +121,15 @@ def school_description(schid):
 	except KeyError:
 		return render_template('description.html', school=theSchool, programs=schoolPrograms)
 
-@app.route('/schools/<schid>/submit-review')
+@app.route('/schools/<schid>/submit-review', methods = ['GET','POST'])
 @requires_login
 def submit_review(schid):
-	db = get_db()
-	school = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [schid]).fetchone()
-	return render_template('submitreview.html', school=school)
+	if request.method == 'POST':
+
+	else:
+		db = get_db()
+		school = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [schid]).fetchone()
+		return render_template('submitreview.html', school=school)
 
 @app.route('/programs/price')
 def prices():
