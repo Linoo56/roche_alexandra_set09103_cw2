@@ -42,6 +42,44 @@
         Reviews given
       </div>
       <div class="panel-body">
+      {% for review in reviews %}
+      {% if review[0].status == 2%}
+        <div class="panel panel-danger">
+	  <div class="panel-heading">{{review[1]}}</div>
+	  <div class="panel-body">
+	  <dl class="dl-horizontal">
+	    <dt>School :</dt>
+	    <dd>{{review[1]}}</dd>
+	    <dt>Content :</dt>
+	    <dd>{{review[0].content}}</dd>
+	    <dt>Status</dt>
+	    <dd><span style="color:red" class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></dd>
+      {% elif review[0].status == 1%}
+	<div class="panel panel-succes">
+	  <div class="panel-heading">{{review[1]}}</div>
+	  <div class="panel-body">
+	  <dl class="dl-horizontal">
+	    <dt>School :</dt>
+	    <dd>{{review[1]}}</dd>
+	    <dt>Content :</dt>
+	    <dd>{{review[0].content}}</dd>
+	    <dt>Status</dt>
+	    <dd><span style="color:green" class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span></dd>
+      {% else %}
+	<div class="panel panel-warning">
+	  <div class="panel-heading">{{review[1]}}</div>
+	  <div class="panel-body">
+	  <dl class="dl-horizontal">
+	    <dt>School :</dt>
+	    <dd>{{review[1]}}</dd>
+	    <dt>Content :</dt>
+	    <dd>{{review[0].content}}</dd>
+	    <dt>Status :</dt>
+	    <dd><span style="color:orange" class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span></dd>
+      {% endif %} 
+        </div>
+	</div>
+      {% endfor %}
       </div>
     </div>
 

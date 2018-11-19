@@ -1,6 +1,6 @@
 {% extends "main.html" %}
 {% block style %}
-    <script src="{{ url_for('static', filename='js/jquery.raty.js') }}"></script>
+    <script src="{{ url_for('static', filename='raty/jquery.raty.js') }}"></script>
     <style>
     </style>
 {% endblock %}
@@ -13,26 +13,19 @@
 
         <form method="post" action="{{ url_for('submit_review', schid=school.schid) }}">
             <div class="form-group">
-                <label for="inputEmail">* Score</label>
-                <div class="raty"></div>
+                <label><h3>* Score</h3></label>
+                <div class="raty" data-score="0"></div>
             </div>
 
             <div class="form-group">
-                <label for="inputPassword">* Password</label>
-                <input required type="password" class="form-control" id="inputPassword" name="inputPassword" placeholder="Password">
+                <label for="review-content"><h3>* Review</h3></label>
+		<div class="jumbotron">
+			<p>Please take time to provide a detailled review of the school comtaining information about courses, staff, location and so on. If your review is not pertinant enough, it won't be accepted by the administrator.</p>
+		</div>
+                <textarea name="review-content" class="form-control" rows="8"></textarea>
             </div>
 
-            <hr/>
-            <div class="form-group">
-                <label for="inputDisplayName">* Display name</label>
-                <input required type="displayName" class="form-control" id="inputDisplayName" name="inputDisplayName" placeholder="DisplayName">
-            </div>
-
-            <div class="form-group">
-                {% block countrydropdown %} {% endblock %}
-            </div>
-
-            <button type="submit" class="btn btn-default">Register now</button>
+            <button type="submit" class="btn btn-default">Submit review</button>
 
         </form>
     </div>
@@ -40,6 +33,15 @@
 
 {% block scripts %}
 <script>   
-  $('.raty').raty();
+	$('.raty').raty({
+		path: '/static/raty/images',
+	});
+	$(document).ready(function(){
+	$("form").submit(function(){
+		var score = $(".raty").attr('data-score')
+		var input = $("<input>").attr("type", "hidden").attr("name", "mydata").val(score);
+		$('form').append(input);
+	});
+	});
 </script>
 {% endblock %}

@@ -1,8 +1,10 @@
 import ConfigParser, sqlite3
 import bcrypt
+import mail
 from functools import wraps
 from school import School
 from program import Program
+from review import Review
 from flask import Flask, request, flash, render_template, g, abort, redirect, session, url_for
 app = Flask(__name__)
 config = ConfigParser.ConfigParser()
@@ -10,12 +12,25 @@ config.read('etc/defaults.cfg')
 app.secret_key = config.get('config','secret_key')  
 db_location = 'var/sqlite3v2.db'
 
-currencies = ['euro', 'pound', 'dollar']
+CURRENCIES = {
+	'euro' : 130, 
+	'pound' : 146, 
+	'dollar' : 112
+}
 
 def requires_login(f):
 	@wraps(f)
 	def decorated(*args, **kwargs):
 		status = session.get('logged_in', False)
+		if not status:
+			return redirect(url_for('root'))
+		return f(*args, **kwargs)
+	return decorated
+	
+def requires_admin(f):
+	@wraps(f)
+	def decorated(*args, **kwargs):
+		status = session.get('admin', False)
 		if not status:
 			return redirect(url_for('root'))
 		return f(*args, **kwargs)
@@ -73,7 +88,6 @@ def init(app):
 
 @app.route('/')
 def root():
-	session['currency'] = 'euro'
 	return render_template('home.html')
 
 @app.route('/schools/')
@@ -124,12 +138,26 @@ def school_description(schid):
 @app.route('/schools/<schid>/submit-review', methods = ['GET','POST'])
 @requires_login
 def submit_review(schid):
-	if request.method == 'POST':
-
+	if request.method == 'GET':
+		db = get_db()
+		schdata = db.cursor().execute("SELECT * FROM schools WHERE schid = ?", [schid]).fetchone()
+		school = School(schdata[0],schdata[1],schdata[2],schdata[3],schdata[4],schdata[5])
+		return render_template('submitreview.html', school=school)
 	else:
 		db = get_db()
+		score = request.form['score']
+		content = request.form['review-content']
 		school = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [schid]).fetchone()
-		return render_template('submitreview.html', school=school)
+		sql="INSERT INTO reviews(user_email, note, content, validated, schid) VALUES(?,?,?,?,?)"
+		db.cursor().execute(sql, (session['user'], score, content, 0, schid))
+		db.commit()
+		userdata = db.cursor().execute("SELECT * FROM users WHERE email = ?", [session['user']]).fetchone()
+
+		reviewid = db.cursor().execute("SELECT rowid FROM reviews WHERE user_email = ? AND schid = ?", (session['user'], schid)).fetchone()
+		url = "set09103.napier.ac.uk:9176/check-review/"+str(reviewid[0])
+		mail.send("Arekusandora78@gmail.com", "Review Submission", "A new review has been submited by "+session['user_name']+" ("+session['user']+") about the school "+school[0]+". Please check it out ! "+url)
+		flash("Your review has been successfully sent")
+		return redirect(url_for('school_description', schid=schid))
 
 @app.route('/programs/price')
 def prices():
@@ -297,7 +325,8 @@ def login_page():
 @app.route('/login', methods=['POST'])
 def login():
 	db = get_db()
-	sql = "SELECT email, password, display_name FROM users WHERE email = ?"
+	msg =""
+	sql = "SELECT email, password, display_name, rank FROM users WHERE email = ?"
 	email = request.form['inputEmail']
 	password = request.form['inputPassword']
 	user = db.cursor().execute(sql, ([email])).fetchone()
@@ -306,7 +335,10 @@ def login():
 		session['logged_in'] = True
 		session['user'] = email
 		session['user_name'] = user[2]
-		flash("Welcome back "+session['user_name']+" !")
+		if user[3] == 2:
+			session['admin'] = True
+			msg += "You are an admin"
+		flash("Welcome back "+session['user_name']+" !"+msg)
 		return redirect(url_for('root'))
 	else:
 		print "Pas valide"
@@ -317,6 +349,7 @@ def logout():
 	session.pop('user', None)
 	session.pop('logged_in',None)
 	session.pop('user_name', None)
+	session.pop('admin', None)
 	return redirect(url_for('root'))
 
 
@@ -324,11 +357,15 @@ def logout():
 @requires_login
 def profile():
 	db = get_db()
+	reviews = []
 	sql = "SELECT email, display_name, country FROM users WHERE email = ?"
 	user = db.cursor().execute(sql, ([session['user']])).fetchone()
 	favorites = db.cursor().execute("SELECT schid FROM favorites WHERE user_email = ? LIMIT 4", ([session['user']])).fetchall()
-	print user
-	return render_template('profile.html', user=user, favorites=favorites)
+	reviewsData = db.cursor().execute("SELECT * FROM reviews WHERE user_email = ?", ([session['user']])).fetchall()
+	for rd in reviewsData:
+		theSchoolData = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [rd[6]]).fetchone()
+		reviews.append([Review(rd[0],rd[1],rd[2],rd[3],rd[4],rd[5],rd[6]), theSchoolData[0]])	
+	return render_template('profile.html', user=user, favorites=favorites, reviews=reviews)
 
 @app.route('/profile/favorites')
 @requires_login
@@ -364,6 +401,18 @@ def del_school_favorite(schid):
 	db.commit()
 	flash(school[0]+" has been removed from your favorites schools")
 	return redirect(request.referrer)
+
+@app.route('/check-review/<reviewid>')
+@requires_admin
+def check_review(reviewid):
+	db = get_db()
+	reviewData = db.cursor().execute("SELECT * FROM reviews WHERE rowid = ? AND validated = 0", reviewid).fetchone()
+	review = Review(reviewData[0],reviewData[1],reviewData[2],reviewData[3],reviewData[4],reviewData[5], reviewData[6])
+	schoolName = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [review.schid]).fetchone()
+	userName = db.cursor().execute("SELECT display_name FROM users WHERE email = ?", [review.userEmail]).fetchone()
+	return render_template('reviewchecking.html', review=review, school=schoolName[0], user=userName[0])
+	
+				
 
 @app.errorhandler(404)
 def page_not_found(error):
