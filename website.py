@@ -5,6 +5,7 @@ from functools import wraps
 from school import School
 from program import Program
 from review import Review
+from datetime import datetime
 from flask import Flask, request, flash, render_template, g, abort, redirect, session, url_for
 app = Flask(__name__)
 config = ConfigParser.ConfigParser()
@@ -90,6 +91,11 @@ def init(app):
 def root():
 	return render_template('home.html')
 
+@app.route('/change-currency/<currency>/')
+def change_currency(currency):
+	session['currency']=currency
+	return redirect(request.referrer)
+
 @app.route('/schools/')
 def listing_schools():
 	db = get_db()
@@ -120,20 +126,36 @@ def listing_programs():
 @app.route('/schools/<schid>')	
 def school_description(schid):
 	db = get_db()
+	if session['currency'] == 'euros':
+		currency = 130
+	elif session['currency'] == 'pounds':
+		currency = 145.5
+	elif session['currency'] == 'dollars':
+		currency = 112
+	else:
+		currency = 130
 	sqlSch="SELECT * FROM schools WHERE schid='"+schid+"'"
 	sqlPro="SELECT * FROM programs WHERE schid='"+schid+"'"
+	sqlRev="SELECT * FROM reviews WHERE validated=1 AND schid='"+schid+"'"
 	schoolData = db.cursor().execute(sqlSch)
 	programsData = db.cursor().execute(sqlPro)
+	reviewsData = db.cursor().execute(sqlRev)
 	schoolPrograms = []
+	schoolReviews = []
 	for t in schoolData:
 		theSchool = School(t[0],t[1],t[2],t[3],t[4],t[5])
 	for u in programsData:
 		schoolPrograms.append(Program(u[0],u[1],u[2],u[3],u[4],u[5],u[6],u[7],u[8],u[9],u[10]))
+	for v in reviewsData:
+		user = db.cursor().execute("SELECT display_name, country FROM users WHERE email = ?", [v[0]]).fetchone()
+		schoolReviews.append([Review(v[0],v[1],v[2],v[3],v[4],v[5],v[6]), user[0], user[1]])	
 	try:
 		fav = db.cursor().execute("SELECT * FROM favorites WHERE schid=? AND user_email=?", (schid, session['user'])).fetchone()
-		return render_template('description.html', school=theSchool, programs=schoolPrograms, fav=fav)
+		userReview = db.cursor().execute("SELECT count(*) FROM reviews WHERE schid = ? AND user_email=?", (schid, session['user'])).fetchone()
+		print userReview[0]
+		return render_template('description.html', currency=currency, school=theSchool, programs=schoolPrograms, reviews=schoolReviews, fav=fav, userReview=userReview[0])
 	except KeyError:
-		return render_template('description.html', school=theSchool, programs=schoolPrograms)
+		return render_template('description.html', currency=currency, school=theSchool, programs=schoolPrograms, reviews=schoolReviews)
 
 @app.route('/schools/<schid>/submit-review', methods = ['GET','POST'])
 @requires_login
@@ -162,11 +184,11 @@ def submit_review(schid):
 @app.route('/programs/price')
 def prices():
 	db = get_db()
-	if session['currency'] == 'euro':
+	if session['currency'] == 'euros':
 		currency = 130
-	elif session['currency'] == 'pound':
+	elif session['currency'] == 'pounds':
 		currency = 145.5
-	elif session['currency'] == 'dollar':
+	elif session['currency'] == 'dollars':
 		currency = 112
 	else:
 		currency = 130
@@ -185,16 +207,17 @@ def prices():
 			
 	values.append([prices[0], counts[0]])
 	values.append([prices[1], counts[1]])
+	print currency, session['currency']
 	return render_template('pricecategories.html', prices=values)
 
 @app.route('/programs/price/<price_range>')
 def sort_prices(price_range):	
 	db = get_db()
-	if session['currency'] == 'euro':
+	if session['currency'] == 'euros':
 		currency = 130
-	elif session['currency'] == 'pound':
+	elif session['currency'] == 'pounds':
 		currency = 145.5
-	elif session['currency'] == 'dollar':
+	elif session['currency'] == 'dollars':
 		currency = 112
 	else:
 		currency == 130
@@ -228,7 +251,7 @@ def sort_prices(price_range):
 					selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
 	else:
 		abort(404) 
-	print(selectedprograms)
+	print currency
 	return render_template('sortresultsprograms.html', programs=selectedprograms)
 
 @app.route('/schools/city')
@@ -305,15 +328,21 @@ def register_page():
 
 @app.route('/register', methods=['POST'])
 def registration():
+	db = get_db()
 	email = request.form['inputEmail']
 	password = bcrypt.hashpw(str(request.form['inputPassword']), bcrypt.gensalt())
 	displayName = request.form['inputDisplayName']
 	country = request.form['inputCountry']
 
-	db = get_db()
-	sql = "INSERT INTO users VALUES (?,?,?,?,?)"
-	db.cursor().execute(sql, (email, password, displayName, country, 1))
-	db.commit()	
+	count = db.cursor().execute("SELECT count(*) FROM users WHERE email = ?", [email]).fetchone()
+	print count[0]
+	if (count[0] == 0):
+		sql = "INSERT INTO users VALUES (?,?,?,?,?)"
+		db.cursor().execute(sql, (email, password, displayName, country, 1))
+		db.commit()	
+	else:
+		flash("It seems that this email adress is already used")
+		redirect(request.referrer)
 
 	print email, password, displayName, country
 	return render_template('registerform.html')
@@ -406,13 +435,36 @@ def del_school_favorite(schid):
 @requires_admin
 def check_review(reviewid):
 	db = get_db()
-	reviewData = db.cursor().execute("SELECT * FROM reviews WHERE rowid = ? AND validated = 0", reviewid).fetchone()
+	reviewData = db.cursor().execute("SELECT * FROM reviews WHERE rowid = ? AND validated = 0", [reviewid]).fetchone()
 	review = Review(reviewData[0],reviewData[1],reviewData[2],reviewData[3],reviewData[4],reviewData[5], reviewData[6])
 	schoolName = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [review.schid]).fetchone()
 	userName = db.cursor().execute("SELECT display_name FROM users WHERE email = ?", [review.userEmail]).fetchone()
-	return render_template('reviewchecking.html', review=review, school=schoolName[0], user=userName[0])
+	return render_template('reviewchecking.html', reviewid=reviewid, review=review, school=schoolName[0], user=userName[0])
 	
+@app.route('/check-review/<reviewid>/accept')
+@requires_admin
+def accept_review(reviewid):
+	db = get_db()				
+	db.cursor().execute("UPDATE reviews SET validated = 1 WHERE rowid = ?", [reviewid])
+	db.cursor().execute("UPDATE reviews SET validated_by = ? WHERE rowid = ?", (session['user_name'], reviewid))
+	now = datetime.utcnow().strftime('%B %d %Y')
+	db.cursor().execute("UPDATE reviews SET validation_date = ? WHERE rowid = ?", (now, reviewid))
+	db.commit()
+	schid = db.cursor().execute("SELECT schid FROM reviews WHERE rowid = ?", [reviewid]).fetchone()
+	 
+	flash("The review has been accepted")
+	return redirect(url_for('school_description', schid=schid[0]))
+
+@app.route('/check-review/<reviewid>/refuse')
+@requires_admin
+def refuse_review(reviewid):
+	db = get_db()
+	db.cursor().execute("UPDATE reviews SET validated = 2 WHERE rowid = ?", [reviewid])
+	schid = db.cursor().execute("SELECT schid FROM reviews WHERE rowid = ?", [reviewid]).fetchone() 
+	flash("The review has been refused")
+	return redirect(url_for('school_description', schid=schid[0]))
 				
+
 
 @app.errorhandler(404)
 def page_not_found(error):

@@ -13,7 +13,7 @@
     </div>
     <div class="panel panel-default">
       <div class="panel-heading">
-        Personnal informations
+        Personnal information
       </div>
       <div class="panel-body">
 	Displayed name : {{ user[1] }}<br/>
@@ -52,10 +52,10 @@
 	    <dd>{{review[1]}}</dd>
 	    <dt>Content :</dt>
 	    <dd>{{review[0].content}}</dd>
-	    <dt>Status</dt>
+	    <dt>Status :</dt>
 	    <dd><span style="color:red" class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></dd>
       {% elif review[0].status == 1%}
-	<div class="panel panel-succes">
+	<div class="panel panel-success">
 	  <div class="panel-heading">{{review[1]}}</div>
 	  <div class="panel-body">
 	  <dl class="dl-horizontal">
@@ -63,7 +63,7 @@
 	    <dd>{{review[1]}}</dd>
 	    <dt>Content :</dt>
 	    <dd>{{review[0].content}}</dd>
-	    <dt>Status</dt>
+	    <dt>Status :</dt>
 	    <dd><span style="color:green" class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span></dd>
       {% else %}
 	<div class="panel panel-warning">

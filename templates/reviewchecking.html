@@ -32,8 +32,8 @@
   	        <hr>
 		<dt><h4>Action :</h4></dt>
   	        <dd class="review-descri">
-		  <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
-		  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+		  <div class="button-container"><a href="{{ url_for('accept_review', reviewid=reviewid) }}" role="button" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
+		  <a href="{{ url_for('refuse_review', reviewid=reviewid) }}" role="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></div>
 		</dd>
 	      </dl>
 	    </div>
