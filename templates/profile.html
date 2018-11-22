@@ -1,8 +1,13 @@
 {% extends "main.html" %}
 
 {% block style %}
+ <script src="{{ url_for('static', filename='raty/jquery.raty.js') }}"></script>
   <style>
-    
+    .favorite-container{
+  	 display:flex;
+  	 justify-content:center;
+ 	 align-items:center;
+     }
   </style>
 {% endblock %}
 
@@ -16,9 +21,9 @@
         Personnal information
       </div>
       <div class="panel-body">
-	Displayed name : {{ user[1] }}<br/>
-	Email : {{ user[0] }} <br/>
-	Country : {{ user[2] }} <br/>
+	<b>Displayed name :</b> {{ user[1] }}<br/>
+	<b>Email :</b> {{ user[0] }} <br/>
+	<b>Country :</b> {{ user[2] }} <br/>
       </div>
     </div>
     <div class="panel panel-default">
@@ -26,7 +31,7 @@
         Your favorites
       </div>
       <div class="panel-body">
-	<div class="row">
+	<div class="row favorite-container">
 	  {% for favorite in favorites %}
 	  <div class="col-xs-6 col-md-3">
 	    <a href="{{ url_for('school_description', schid=favorite[0]) }}" class="thumbnail">
@@ -35,6 +40,7 @@
           </div>
 	  {% endfor %}
         </div>
+	   <a href="{{url_for('favorites')}}">See more</a>
       </div>
     </div>
     <div class="panel panel-default">
@@ -50,6 +56,8 @@
 	  <dl class="dl-horizontal">
 	    <dt>School :</dt>
 	    <dd>{{review[1]}}</dd>
+	    <dt>Score :</dt>
+	    <dd><div class="raty" data-score="{{review[0].score}}"></div></dd>
 	    <dt>Content :</dt>
 	    <dd>{{review[0].content}}</dd>
 	    <dt>Status :</dt>
@@ -61,6 +69,8 @@
 	  <dl class="dl-horizontal">
 	    <dt>School :</dt>
 	    <dd>{{review[1]}}</dd>
+	    <dt>Score :</dt>
+	    <dd><div class="raty" data-score="{{review[0].score}}"></div></dd>
 	    <dt>Content :</dt>
 	    <dd>{{review[0].content}}</dd>
 	    <dt>Status :</dt>
@@ -72,6 +82,8 @@
 	  <dl class="dl-horizontal">
 	    <dt>School :</dt>
 	    <dd>{{review[1]}}</dd>
+	    <dt>Score :</dt>
+	    <dd><div class="raty" data-score="{{review[0].score}}"></div></dd>
 	    <dt>Content :</dt>
 	    <dd>{{review[0].content}}</dd>
 	    <dt>Status :</dt>
@@ -85,3 +97,15 @@
 
   </div>
 {% endblock %}
+{% block scripts %}
+<script>
+        $('.raty').raty({
+                score: function() {
+   			return $(this).attr('data-score');
+ 		},
+		readOnly : true,
+                path: '/static/raty/images',
+        });
+</script>
+{% endblock %}
+

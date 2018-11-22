@@ -1,7 +1,7 @@
 {% extends "main.html" %}
 {% block style %}
+<script src="{{ url_for('static', filename='raty/jquery.raty.js') }}"></script>
 <style>
-
   td:nth-child(2){
     text-align-last: end;
   }
@@ -106,7 +106,18 @@
 	   {% for program in programs%}
 	     <div class="tab-pane fade" id="tab{{loop.index}}default">
                <div class="row">
-                 <div class="col-md-6">
+	        {% if session['logged_in'] %}
+	         <div class="col-md-1 heart-container">
+	         {% if program.proId in progfav %}
+	           <a href="{{ url_for('del_program_favorite', schid=school.schid, progid=program.proId) }}"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span></a>
+	         {% else %}	
+	           <a href="{{ url_for('add_program_favorite', schid=school.schid, progid=program.proId) }}"><span class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span></a>
+	         {% endif %}
+	         </div>
+                 <div class="col-md-5">
+	         {% else %}
+	         <div class="col-md-6">
+	         {% endif %}
 	           <dl class="dl-horizontal">
 		     <dt>Duration :</dt>
 		     <dd>{{ program.duration }} months</dd>
@@ -158,8 +169,8 @@
                              <td>{{ format_price((program.appliFee+program.courseFee+program.accoFee)/program.duration) }} yens</td>
                            </tr>
 			   <tr>
-                             <td><b>Price per month ({{ session['currency'] }}):</b></td>
-                             <td>{{ format_price(((program.appliFee+program.courseFee+program.accoFee)/program.duration)/currency) }} {{session['currency']}}</td>
+                             <td><b>Price per month ({{ currency[1] }}):</b></td>
+                             <td>{{ format_price(((program.appliFee+program.courseFee+program.accoFee)/program.duration)/currency[0]) }} {{currency[1]}}</td>
                            </tr>
 			   {% endif %}
                          </tbody>
@@ -193,6 +204,7 @@
 		   <p>{{ review[0].checkingDate }}</p>
 		 </div>
 		 <div class="col-md-10">
+		   <div class="raty" data-score="{{ review[0].score }}"></div>
 		   <p>{{ review[0].content }}</p>
 		 </div>
 	       </div>
@@ -213,5 +225,14 @@ var x = document.querySelectorAll("li#tabs");
 x[0].setAttribute("class", "active"); 
 var y = document.querySelectorAll("div:first-child.tab-pane.fade")
 y[0].setAttribute("class", "tab-pane fade in active")
+
+	$('.raty').raty({
+                score: function() {
+                        return $(this).attr('data-score');
+                },
+                readOnly : true,
+                path: '/static/raty/images',
+        });
+
 </script> 
 {% endblock %}

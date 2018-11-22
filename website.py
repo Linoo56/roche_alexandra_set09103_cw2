@@ -13,12 +13,6 @@ config.read('etc/defaults.cfg')
 app.secret_key = config.get('config','secret_key')  
 db_location = 'var/sqlite3v2.db'
 
-CURRENCIES = {
-	'euro' : 130, 
-	'pound' : 146, 
-	'dollar' : 112
-}
-
 def requires_login(f):
 	@wraps(f)
 	def decorated(*args, **kwargs):
@@ -126,36 +120,43 @@ def listing_programs():
 @app.route('/schools/<schid>')	
 def school_description(schid):
 	db = get_db()
-	if session['currency'] == 'euros':
-		currency = 130
-	elif session['currency'] == 'pounds':
-		currency = 145.5
-	elif session['currency'] == 'dollars':
-		currency = 112
-	else:
-		currency = 130
-	sqlSch="SELECT * FROM schools WHERE schid='"+schid+"'"
-	sqlPro="SELECT * FROM programs WHERE schid='"+schid+"'"
-	sqlRev="SELECT * FROM reviews WHERE validated=1 AND schid='"+schid+"'"
-	schoolData = db.cursor().execute(sqlSch)
-	programsData = db.cursor().execute(sqlPro)
-	reviewsData = db.cursor().execute(sqlRev)
-	schoolPrograms = []
-	schoolReviews = []
-	for t in schoolData:
-		theSchool = School(t[0],t[1],t[2],t[3],t[4],t[5])
-	for u in programsData:
-		schoolPrograms.append(Program(u[0],u[1],u[2],u[3],u[4],u[5],u[6],u[7],u[8],u[9],u[10]))
-	for v in reviewsData:
-		user = db.cursor().execute("SELECT display_name, country FROM users WHERE email = ?", [v[0]]).fetchone()
-		schoolReviews.append([Review(v[0],v[1],v[2],v[3],v[4],v[5],v[6]), user[0], user[1]])	
 	try:
-		fav = db.cursor().execute("SELECT * FROM favorites WHERE schid=? AND user_email=?", (schid, session['user'])).fetchone()
-		userReview = db.cursor().execute("SELECT count(*) FROM reviews WHERE schid = ? AND user_email=?", (schid, session['user'])).fetchone()
-		print userReview[0]
-		return render_template('description.html', currency=currency, school=theSchool, programs=schoolPrograms, reviews=schoolReviews, fav=fav, userReview=userReview[0])
+		if session['currency'] == 'euros':
+			currency=[130, 'euros']
+		elif session['currency'] == 'pounds':
+			currency=[145.5, 'pounds']
+		elif session['currency'] == 'dollars':
+			currency=[112, 'dollars']
+		else:
+			currency=[130, 'euros']
 	except KeyError:
-		return render_template('description.html', currency=currency, school=theSchool, programs=schoolPrograms, reviews=schoolReviews)
+		currency=[130, 'euros']
+	finally:	
+		sqlSch="SELECT * FROM schools WHERE schid='"+schid+"'"
+		sqlPro="SELECT * FROM programs WHERE schid='"+schid+"'"
+		sqlRev="SELECT * FROM reviews WHERE validated=1 AND schid='"+schid+"'"
+		schoolData = db.cursor().execute(sqlSch)
+		programsData = db.cursor().execute(sqlPro)
+		reviewsData = db.cursor().execute(sqlRev)
+		schoolPrograms = []
+		schoolReviews = []
+		progfav = []
+		for t in schoolData:
+			theSchool = School(t[0],t[1],t[2],t[3],t[4],t[5])
+		for u in programsData:
+			schoolPrograms.append(Program(u[0],u[1],u[2],u[3],u[4],u[5],u[6],u[7],u[8],u[9],u[10]))
+		for v in reviewsData:
+			user = db.cursor().execute("SELECT display_name, country FROM users WHERE email = ?", [v[0]]).fetchone()
+			schoolReviews.append([Review(v[0],v[1],v[2],v[3],v[4],v[5],v[6]), user[0], user[1]])	
+		try:
+			fav = db.cursor().execute("SELECT * FROM favorites WHERE schid=? AND user_email=?", (schid, session['user'])).fetchone()
+			progfavdata = db.cursor().execute("SELECT progid FROM favorites WHERE schid=? AND user_email=? AND progid!=''", (schid, session['user']))
+			for t in progfavdata:
+				progfav.append(t[0])
+			userReview = db.cursor().execute("SELECT count(*) FROM reviews WHERE schid = ? AND user_email=?", (schid, session['user'])).fetchone()
+			return render_template('description.html', currency=currency, school=theSchool, programs=schoolPrograms, reviews=schoolReviews, fav=fav, progfav=progfav, userReview=userReview[0])
+		except KeyError:
+			return render_template('description.html', currency=currency, school=theSchool, programs=schoolPrograms, reviews=schoolReviews)
 
 @app.route('/schools/<schid>/submit-review', methods = ['GET','POST'])
 @requires_login
@@ -184,75 +185,80 @@ def submit_review(schid):
 @app.route('/programs/price')
 def prices():
 	db = get_db()
-	if session['currency'] == 'euros':
-		currency = 130
-	elif session['currency'] == 'pounds':
-		currency = 145.5
-	elif session['currency'] == 'dollars':
-		currency = 112
-	else:
-		currency = 130
-	prices = ['U1000','O1000']
-	counts = [0, 0]
-	values = []
-	sql = "SELECT duration, appli_fee, course_fee, acco_fee FROM programs"
-	for result in db.cursor().execute(sql):
-		if (result[3] != ''):
-			if (result[1] != '' and ((result[1]+result[2]+result[3])/result[0])/currency < 1000):
-				counts[0] = counts[0]+1
-			elif (result[1] == '' and ((result[2]+result[3])/result[0])/currency < 1000):
-				counts[0] = counts[0]+1
-			else:
-				counts[1] = counts[1]+1
+	try:
+		if session['currency'] == 'euros':
+			currency=[130, 'euros']
+		elif session['currency'] == 'pounds':
+			currency=[145.5, 'pounds']
+		elif session['currency'] == 'dollars':
+			currency=[112, 'dollars']
+		else:
+			currency=[130, 'euros']
+	except KeyError:
+		currency=[130, 'euros']
+	finally:	
+		prices = ['U1000','O1000']
+		counts = [0, 0]
+		values = []
+		sql = "SELECT duration, appli_fee, course_fee, acco_fee FROM programs"
+		for result in db.cursor().execute(sql):
+			if (result[3] != ''):
+				if (result[1] != '' and ((result[1]+result[2]+result[3])/result[0])/currency[0] < 1000):
+					counts[0] = counts[0]+1
+				elif (result[1] == '' and ((result[2]+result[3])/result[0])/currency[0] < 1000):
+					counts[0] = counts[0]+1
+				else:
+					counts[1] = counts[1]+1
 			
-	values.append([prices[0], counts[0]])
-	values.append([prices[1], counts[1]])
-	print currency, session['currency']
-	return render_template('pricecategories.html', prices=values)
+		values.append([prices[0], counts[0]])
+		values.append([prices[1], counts[1]])
+		return render_template('pricecategories.html', prices=values, currency=currency)
+	
 
 @app.route('/programs/price/<price_range>')
 def sort_prices(price_range):	
 	db = get_db()
-	if session['currency'] == 'euros':
-		currency = 130
-	elif session['currency'] == 'pounds':
-		currency = 145.5
-	elif session['currency'] == 'dollars':
-		currency = 112
-	else:
-		currency == 130
-	selectedprograms = []
-	programs = []
-	sql="SELECT * FROM programs"
-	sqlsch="SELECT * FROM schools WHERE schid='"
-	programsData = db.cursor().execute(sql)
-	for u in programsData:
-		programs.append(Program(u[0],u[1],u[2],u[3],u[4],u[5],u[6],u[7],u[8],u[9],u[10]))
-	if price_range == 'U1000':
-		for program in programs:
-			if program.accoFee != '' and program.appliFee != '' and ((program.appliFee+program.courseFee+program.accoFee)/program.duration)/currency < 1000:
-				school = db.cursor().execute(sqlsch+program.schId+"'")
-				for t in school:
-					selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
-			if program.accoFee != '' and program.appliFee == '' and ((program.courseFee+program.accoFee)/program.duration)/currency < 1000:
-				school = db.cursor().execute(sqlsch+program.schId+"'")
-				for t in school:
-					selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
-	elif price_range == 'O1000':
-		for program in programs:
-			if program.accoFee != '' and program.appliFee == '' and ((program.courseFee+program.accoFee)/program.duration)/currency >= 1000:
-				school = db.cursor().execute(sqlsch+program.schId+"'")
-				for t in school:
-					selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
+	try:
+		if session['currency'] == 'euros':
+			currency=[130, 'euros']
+		elif session['currency'] == 'pounds':
+			currency=[145.5, 'pounds']
+		elif session['currency'] == 'dollars':
+			currency=[112, 'dollars']
+		else:
+			currency=[130, 'euros']
+	except KeyError:
+		currency=[130, 'euros']
+	finally:	
+		selectedprograms = []
+		programs = []
+		sql="SELECT * FROM programs"
+		sqlsch="SELECT * FROM schools WHERE schid='"
+		programsData = db.cursor().execute(sql)
+		for u in programsData:
+			programs.append(Program(u[0],u[1],u[2],u[3],u[4],u[5],u[6],u[7],u[8],u[9],u[10]))
+		if price_range == 'U1000':
+			for program in programs:
+				if program.accoFee != '' and program.appliFee != '' and ((program.appliFee+program.courseFee+program.accoFee)/program.duration)/currency[0] < 1000:
+					school = db.cursor().execute(sqlsch+program.schId+"'")
+					for t in school:
+						selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
+				if program.accoFee != '' and program.appliFee == '' and ((program.courseFee+program.accoFee)/program.duration)/currency[0] < 1000:
+					school = db.cursor().execute(sqlsch+program.schId+"'")
+					for t in school:
+						selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
+		elif price_range == 'O1000':
+			for program in programs:
+				if program.accoFee != '' and program.appliFee == '' and ((program.courseFee+program.accoFee)/program.duration)/currency[0] >= 1000:
+					school = db.cursor().execute(sqlsch+program.schId+"'")
+					for t in school:
+						selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
 	
-			if program.accoFee != '' and program.appliFee != '' and ((program.appliFee+program.courseFee+program.accoFee)/program.duration)/currency >= 1000:
-				school = db.cursor().execute(sqlsch+program.schId+"'")
-				for t in school:
-					selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
-	else:
-		abort(404) 
-	print currency
-	return render_template('sortresultsprograms.html', programs=selectedprograms)
+				if program.accoFee != '' and program.appliFee != '' and ((program.appliFee+program.courseFee+program.accoFee)/program.duration)/currency[0] >= 1000:
+					school = db.cursor().execute(sqlsch+program.schId+"'")
+					for t in school:
+						selectedprograms.append([School(t[0],t[1],t[2],t[3],t[4],t[5]), program])	
+		return render_template('sortresultsprograms.html', programs=selectedprograms)
 
 @app.route('/schools/city')
 def cities():
@@ -401,12 +407,17 @@ def profile():
 def favorites():
 	db = get_db()
 	favschools= []
-	favorites = db.cursor().execute("SELECT schid FROM favorites WHERE user_email = ?", ([session['user']])).fetchall()
+	favorites = db.cursor().execute("SELECT * FROM favorites WHERE user_email = ?", ([session['user']])).fetchall()
 	for favorite in favorites:
-		print favorite
-		u = db.cursor().execute("SELECT * FROM schools WHERE schid=?", favorite).fetchone()
-		favschools.append(School(u[0],u[1],u[2],u[3],u[4],u[5]))
-	print favschools
+		print favorite[2]
+		if favorite[2] == '':
+			u = db.cursor().execute("SELECT * FROM schools WHERE schid=?", [favorite[1]]).fetchone()
+			favschools.append([1, School(u[0],u[1],u[2],u[3],u[4],u[5])])
+		else:
+			t = db.cursor().execute("SELECT * FROM programs WHERE proid=?", [favorite[2]]).fetchone()
+			school = db.cursor().execute("SELECT name FROM schools WHERE schid=?", [favorite[1]]).fetchone()
+			print school[0]
+			favschools.append([2, Program(t[0],t[1],t[2],t[3],t[4],t[5],t[6],t[7],t[8],t[9],t[10]), school[0]])
 	return render_template('favorites.html', favorites=favschools)
 
 @app.route('/addfav/<schid>')
@@ -430,6 +441,29 @@ def del_school_favorite(schid):
 	db.commit()
 	flash(school[0]+" has been removed from your favorites schools")
 	return redirect(request.referrer)
+
+@app.route('/addfav/<schid>/<progid>')
+@requires_login
+def add_program_favorite(schid, progid):
+	db = get_db()
+	sql = "INSERT INTO favorites VALUES (?,?,?)"
+	school = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [schid]).fetchone()
+	db.cursor().execute(sql,(session['user'], schid, progid))
+	db.commit()
+	flash("The program has been added to your favorites programs")
+	return redirect(request.referrer)
+
+@app.route('/delfav/<schid>/<progid>')
+@requires_login
+def del_program_favorite(schid, progid):
+	db = get_db()
+	sql = "DELETE FROM favorites WHERE schid=? AND progid = ? AND user_email=?"
+	school = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [schid]).fetchone()
+	db.cursor().execute(sql,(schid, progid, session['user']))
+	db.commit()
+	flash("The program has been removed from your favorites programs")
+	return redirect(request.referrer)
+
 
 @app.route('/check-review/<reviewid>')
 @requires_admin
@@ -460,6 +494,7 @@ def accept_review(reviewid):
 def refuse_review(reviewid):
 	db = get_db()
 	db.cursor().execute("UPDATE reviews SET validated = 2 WHERE rowid = ?", [reviewid])
+	db.commit()
 	schid = db.cursor().execute("SELECT schid FROM reviews WHERE rowid = ?", [reviewid]).fetchone() 
 	flash("The review has been refused")
 	return redirect(url_for('school_description', schid=schid[0]))
