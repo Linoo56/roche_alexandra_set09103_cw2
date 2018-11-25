@@ -141,9 +141,13 @@
                        <table class="table">
                          <tbody>
 			   <tr>
-                   <td><b>Application fee :</b></td>
-                   <td>{{ format_price(program.appliFee) }} yens</td>
-               </tr>
+                   	     <td><b>Application fee :</b></td>
+			     {% if program.appliFee is number %}
+                    	     <td>{{ format_price(program.appliFee) }} yens</td>
+			     {% else %}
+			     <td>Included in the course fee</td>
+			     {% endif %}
+               		   </tr>
 			   <tr>
                              <td><b>Course fee :</b></td>
                              <td>{{ format_price(program.courseFee) }} yens</td>
@@ -159,7 +163,20 @@
                              <td>Not calculated</td>
                            </tr>
 			   {% endif %}
-			   {% if program.accoFee is number %}
+			   {% if program.accoFee is number and program.appliFee is not number %}
+                           <tr>
+                             <td><b>Total fee :</b></td>
+                             <td>{{ format_price(program.courseFee+program.accoFee) }} yens</td>
+                           </tr>
+			   <tr>
+                             <td><b>Price per month (yens):</b></td>
+                             <td>{{ format_price((program.courseFee+program.accoFee)/program.duration) }} yens</td>
+                           </tr>
+			   <tr>
+                             <td><b>Price per month ({{ currency[1] }}):</b></td>
+                             <td>{{ format_price(((program.courseFee+program.accoFee)/program.duration)/currency[0]) }} {{currency[1]}}</td>
+                           </tr>	
+			   {% elif program.accoFee is number %}
                            <tr>
                              <td><b>Total fee :</b></td>
                              <td>{{ format_price(program.appliFee+program.courseFee+program.accoFee) }} yens</td>
@@ -182,9 +199,9 @@
 	   {% endfor %}
 	   </div>
 	 </div>
-       {% endif %}
-
       </div>
+     {% endif %}
+
      {% if session['logged_in'] and userReview == 0%}
          <div class="button-container"><a href="{{ url_for('submit_review', schid=school.schid) }}" class="btn btn-primary btn-block" role="button"><h4>You can submit a review of the school</h4></a></div>
      {% endif %}

@@ -11,6 +11,7 @@ app = Flask(__name__)
 config = ConfigParser.ConfigParser()
 config.read('etc/defaults.cfg')
 app.secret_key = config.get('config','secret_key')  
+app.gmail_psw = config.get('config','gmail_psw')
 db_location = 'var/sqlite3v2.db'
 
 def requires_login(f):
@@ -78,6 +79,7 @@ def init(app):
 		config.read(config_location)
 		
 		app.config['SECRET_KEY'] = config.get("config", "secret_key")
+		app.config['GMAIL_PSW'] = config.get("config", "gmail_psw")
 	except:
 		return render_template('error.html')
 
@@ -149,7 +151,7 @@ def school_description(schid):
 			user = db.cursor().execute("SELECT display_name, country FROM users WHERE email = ?", [v[0]]).fetchone()
 			schoolReviews.append([Review(v[0],v[1],v[2],v[3],v[4],v[5],v[6]), user[0], user[1]])	
 		try:
-			fav = db.cursor().execute("SELECT * FROM favorites WHERE schid=? AND user_email=?", (schid, session['user'])).fetchone()
+			fav = db.cursor().execute("SELECT * FROM favorites WHERE schid=? AND user_email=? AND progid=''", (schid, session['user'])).fetchone()
 			progfavdata = db.cursor().execute("SELECT progid FROM favorites WHERE schid=? AND user_email=? AND progid!=''", (schid, session['user']))
 			for t in progfavdata:
 				progfav.append(t[0])
@@ -178,7 +180,8 @@ def submit_review(schid):
 
 		reviewid = db.cursor().execute("SELECT rowid FROM reviews WHERE user_email = ? AND schid = ?", (session['user'], schid)).fetchone()
 		url = "set09103.napier.ac.uk:9176/check-review/"+str(reviewid[0])
-		mail.send("Arekusandora78@gmail.com", "Review Submission", "A new review has been submited by "+session['user_name']+" ("+session['user']+") about the school "+school[0]+". Please check it out ! "+url)
+		print app.gmail_psw, type(app.gmail_psw)
+		mail.send("Arekusandora78@gmail.com", app.gmail_psw, "Review Submission", "A new review has been submited by "+session['user_name']+" ("+session['user']+") about the school "+school[0]+". Please check it out ! "+url)
 		flash("Your review has been successfully sent")
 		return redirect(url_for('school_description', schid=schid))
 
@@ -435,7 +438,7 @@ def add_school_favorite(schid):
 @requires_login
 def del_school_favorite(schid):
 	db = get_db()
-	sql = "DELETE FROM favorites WHERE schid=? AND user_email=?"
+	sql = "DELETE FROM favorites WHERE schid=? AND user_email=? AND progid=''"
 	school = db.cursor().execute("SELECT name FROM schools WHERE schid = ?", [schid]).fetchone()
 	db.cursor().execute(sql,(schid, session['user']))
 	db.commit()

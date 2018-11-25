@@ -9,11 +9,11 @@ from email import Encoders
 
 import os
 
-def send(to, subject, text, attach=None):
+
+def send(to, gmail_psw, subject, text, attach=None):
     msg = MIMEMultipart("alternative")
     msg.set_charset("utf-8")
     gmail_user = "japlangsch.hikaweb@gmail.com"
-    gmail_pwd = "Zufemi*38"    
 
     msg['From'] = gmail_user
     msg['To'] = to
@@ -35,7 +35,7 @@ def send(to, subject, text, attach=None):
         mailServer.ehlo()
         mailServer.starttls()
         mailServer.ehlo()
-        mailServer.login(gmail_user, gmail_pwd)
+        mailServer.login(gmail_user, gmail_psw)
         mailServer.sendmail(gmail_user, to, msg.as_string())
         # Should be mailServer.quit(), but that crashes...
         mailServer.close()
