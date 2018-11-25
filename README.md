@@ -6,8 +6,8 @@ October - November 2018
 /sourcecode : code of the web-app
 
 To run the app from Napier's server :
->> pip install --user flask
->> pip install --user bycrypt
->> python -c "import flask"
->> export FLASK_APP = website.py
->> python -m flask run --host=0.0.0.0 --port 9176
+  pip install --user flask
+  pip install --user bycrypt
+  python -c "import flask"
+  export FLASK_APP = website.py
+  python -m flask run --host=0.0.0.0 --port 9176
